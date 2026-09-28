@@ -1,0 +1,302 @@
+<title>Mind the Gap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; a quiet header with the show mark, tabs for Today / Episodes / Glossary.
+   Today = episode title, topic reactions (the feedback loop), then the text version. */
+:root {
+  --bg: #f6f7fa;
+  --surface: #ffffff;
+  --fg: #151a26;
+  --muted: #5d6679;
+  --line: #dde1ea;
+  --amber: #b86e00;
+  --amber-soft: #fff1da;
+  --sky: #1f6fa8;
+  --sky-soft: #e3f1fb;
+  --good: #1f7a4a; --good-soft: #e1f4e9;
+  --warn: #9a6200; --warn-soft: #fcf0d6;
+  --bad: #b3372c;  --bad-soft: #fbe5e2;
+  --display: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121620; --surface: #1a2030; --fg: #eceff5; --muted: #9aa3b5; --line: #2b3346;
+    --amber: #ffb84c; --amber-soft: #3a2c14; --sky: #78c8ff; --sky-soft: #16304a;
+    --good: #6fd39c; --good-soft: #16352a; --warn: #f2c063; --warn-soft: #3a2f16; --bad: #ff8f84; --bad-soft: #3d1f1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121620; --surface: #1a2030; --fg: #eceff5; --muted: #9aa3b5; --line: #2b3346;
+  --amber: #ffb84c; --amber-soft: #3a2c14; --sky: #78c8ff; --sky-soft: #16304a;
+  --good: #6fd39c; --good-soft: #16352a; --warn: #f2c063; --warn-soft: #3a2f16; --bad: #ff8f84; --bad-soft: #3d1f1d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.65; }
+.wrap { max-width: 44rem; margin: 0 auto; padding-inline: 18px; padding-block: 20px 64px; display: grid; gap: 28px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.mark { display: flex; align-items: center; gap: 12px; }
+.mark .track { display: flex; align-items: center; gap: 4px; }
+.mark .track i { display: block; height: 5px; width: 18px; border-radius: 3px; background: var(--amber); }
+.mark .track b { display: block; width: 4px; height: 4px; border-radius: 50%; background: var(--sky); }
+.mark h1 { font-family: var(--display); font-weight: 700; font-size: 1.05rem; letter-spacing: .08em; text-transform: uppercase; margin: 0; }
+nav { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+nav button { font-family: var(--display); font-weight: 500; font-size: .85rem; border: 0; background: none; color: var(--muted); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+nav button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
+nav button:focus-visible, .react button:focus-visible, .ep-link:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+
+.eyebrow { font-family: var(--mono); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+h2.title { font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 5vw, 2.2rem); line-height: 1.15; margin: 6px 0 0; text-wrap: balance; }
+.summary { color: var(--muted); margin: 10px 0 0; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; }
+.panel h3 { font-family: var(--display); font-weight: 600; font-size: 1rem; margin: 0; }
+.panel .hint { font-size: .9rem; color: var(--muted); margin: 0; }
+.topic { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--line); }
+.topic:first-of-type { border-top: 0; padding-top: 0; }
+.topic .name { font-family: var(--display); font-weight: 500; font-size: .98rem; min-width: 0; flex: 1 1 12rem; }
+.topic .name small { display: block; font-family: var(--body); font-weight: 400; font-size: .85rem; color: var(--muted); }
+.react { display: flex; gap: 6px; }
+.react button { font-family: var(--display); font-size: .8rem; font-weight: 500; border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 999px; padding: 6px 11px; cursor: pointer; display: inline-flex; gap: 5px; align-items: center; }
+.react button[data-v="got"][aria-pressed="true"] { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+.react button[data-v="shaky"][aria-pressed="true"] { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+.react button[data-v="lost"][aria-pressed="true"] { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+.react button:disabled { opacity: .55; cursor: default; }
+textarea { width: 100%; min-height: 4.5rem; font: inherit; font-size: .95rem; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical; }
+.row { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.btn { font-family: var(--display); font-weight: 500; font-size: .85rem; border: 0; border-radius: 999px; padding: 8px 16px; background: var(--fg); color: var(--bg); cursor: pointer; }
+.status { font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+
+article { display: grid; gap: 22px; }
+article section { display: grid; gap: 10px; min-width: 0; }
+article h4 { font-family: var(--display); font-weight: 600; font-size: 1.2rem; margin: 0; text-wrap: balance; }
+article p { margin: 0; max-width: 65ch; }
+article ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 6px; }
+.segment { font-family: var(--mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--amber); }
+.sources { font-size: .9rem; color: var(--muted); display: grid; gap: 6px; }
+.sources a { color: var(--sky); overflow-wrap: anywhere; }
+
+.eps { display: grid; gap: 2px; }
+.ep-link { display: grid; grid-template-columns: 5.5rem 1fr; gap: 12px; text-align: left; font: inherit; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 12px 4px; color: var(--fg); cursor: pointer; }
+.ep-link span:first-child { font-family: var(--mono); font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 3px; }
+.ep-link strong { font-family: var(--display); font-weight: 500; }
+.ep-link small { display: block; color: var(--muted); font-size: .85rem; }
+
+input[type="search"] { width: 100%; font: inherit; font-size: 1rem; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.terms { display: grid; gap: 0; }
+.term { padding: 14px 2px; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
+.term dt { font-family: var(--display); font-weight: 600; }
+.term dd { margin: 0; }
+.term .from { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+
+.empty { border: 1px dashed var(--line); border-radius: 14px; padding: 22px; color: var(--muted); display: grid; gap: 8px; }
+.empty strong { font-family: var(--display); color: var(--fg); font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) { nav button, .react button { transition: background .15s, color .15s, border-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="mark">
+      <span class="track" aria-hidden="true"><i></i><b></b><b></b><b></b><i></i></span>
+      <h1>Mind the Gap</h1>
+    </div>
+    <nav role="tablist" aria-label="Sections">
+      <button id="tab-today" role="tab" aria-selected="true" data-tab="today">Today</button>
+      <button id="tab-eps" role="tab" aria-selected="false" data-tab="eps">Episodes</button>
+      <button id="tab-gloss" role="tab" aria-selected="false" data-tab="gloss">Glossary</button>
+    </nav>
+  </header>
+
+  <main id="view-today" data-view="today">
+    <div class="empty" id="today-empty">
+      <strong>No episode loaded yet</strong>
+      <span>New episodes land here at 6am, Monday through Saturday, alongside the audio in your podcast app. Each one lists its topics so you can mark how well each landed.</span>
+    </div>
+    <div id="today" hidden style="display:grid;gap:26px">
+      <div>
+        <p class="eyebrow" id="ep-meta"></p>
+        <h2 class="title" id="ep-title"></h2>
+        <p class="summary" id="ep-summary"></p>
+      </div>
+      <section class="panel" aria-labelledby="react-h">
+        <h3 id="react-h">How did these land?</h3>
+        <p class="hint">Your marks decide what comes back. Got it returns in a couple of weeks, shaky within a few days, lost me next episode with a different angle.</p>
+        <div id="topics"></div>
+        <label class="hint" for="note">Anything confusing, or something you want covered?</label>
+        <textarea id="note" placeholder="Optional"></textarea>
+        <div class="row"><span class="status" id="save-status"></span><button class="btn" id="save-note">Save note</button></div>
+      </section>
+      <article id="ep-body"></article>
+      <div class="sources" id="ep-sources"></div>
+    </div>
+  </main>
+
+  <main id="view-eps" data-view="eps" hidden>
+    <div class="eps" id="eps"></div>
+    <div class="empty" id="eps-empty"><strong>No episodes yet</strong><span>Every episode is kept here, newest first.</span></div>
+  </main>
+
+  <main id="view-gloss" data-view="gloss" hidden style="display:grid;gap:16px">
+    <input type="search" id="gloss-q" placeholder="Search terms" aria-label="Search glossary">
+    <dl class="terms" id="terms"></dl>
+    <div class="empty" id="gloss-empty"><strong>Glossary is empty</strong><span>Every new term from an episode is added here with a plain-English definition.</span></div>
+  </main>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const LABEL = { got: "Got it", shaky: "Shaky", lost: "Lost me" };
+const ICON = { got: "👍", shaky: "🤔", lost: "❓" };
+let db = null, episodes = [], current = null, reactions = {}, unsubReact = null, glossary = [];
+
+function fmtDate(iso) {
+  const d = new Date(iso + "T12:00:00");
+  return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+}
+
+function el(tag, attrs, text) {
+  const e = document.createElement(tag);
+  if(attrs) for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(text != null) e.textContent = text;
+  return e;
+}
+
+function showTab(name) {
+  document.querySelectorAll("nav button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
+  document.querySelectorAll("main").forEach(m => m.hidden = m.dataset.view !== name);
+  try { localStorage.setItem("mtg-tab", name); } catch (e) {}
+}
+document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+
+function renderBody(ep) {
+  const body = $("ep-body"); body.replaceChildren();
+  for(const s of (ep.sections || [])) {
+    const sec = el("section");
+    if(s.segment) sec.append(el("span", { class: "segment" }, s.segment));
+    if(s.heading) sec.append(el("h4", null, s.heading));
+    const blocks = String(s.body || "").split(/\n\s*\n/);
+    for(const b of blocks) {
+      const lines = b.split("\n").map(x => x.trim()).filter(Boolean);
+      if(!lines.length) continue;
+      if(lines.every(l => l.startsWith("- "))) {
+        const ul = el("ul");
+        lines.forEach(l => ul.append(el("li", null, l.slice(2))));
+        sec.append(ul);
+      } else {
+        sec.append(el("p", null, lines.join(" ")));
+      }
+    }
+    body.append(sec);
+  }
+  const src = $("ep-sources"); src.replaceChildren();
+  if((ep.sources || []).length) {
+    src.append(el("span", { class: "eyebrow" }, "Sources"));
+    for(const s of ep.sources) {
+      const a = el("a", { href: s.url, target: "_blank", rel: "noopener" }, s.title || s.url);
+      const d = el("div"); d.append(a); src.append(d);
+    }
+  }
+}
+
+function renderTopics() {
+  const box = $("topics"); box.replaceChildren();
+  for(const t of (current.topics || [])) {
+    const row = el("div", { class: "topic" });
+    const name = el("div", { class: "name" }, t.name);
+    if(t.blurb) name.append(el("small", null, t.blurb));
+    const r = el("div", { class: "react", role: "group", "aria-label": "Reaction for " + t.name });
+    for(const v of ["got", "shaky", "lost"]) {
+      const b = el("button", { "data-v": v, "aria-pressed": String(reactions[t.id] === v), type: "button" });
+      b.append(el("span", { "aria-hidden": "true" }, ICON[v]), document.createTextNode(LABEL[v]));
+      b.disabled = !db;
+      b.addEventListener("click", () => react(t.id, v));
+      r.append(b);
+    }
+    row.append(name, r); box.append(row);
+  }
+}
+
+let writing = Promise.resolve();
+function saveReactions(patch, msg) {
+  if(!db || !current) return;
+  Object.assign(reactions, patch);
+  renderTopics();
+  const body = Object.assign({}, reactions, { date: current.date, updatedAt: new Date().toISOString() });
+  writing = writing.then(() => db.doc("reactions/" + current.date).set(body))
+    .then(() => { $("save-status").textContent = msg; })
+    .catch(() => { $("save-status").textContent = "Couldn't save. Check your connection and tap again."; });
+}
+function react(id, v) { saveReactions({ [id]: reactions[id] === v ? null : v }, "Saved"); }
+$("save-note").addEventListener("click", () => saveReactions({ note: $("note").value.trim() }, "Note saved"));
+
+function openEpisode(ep) {
+  current = ep;
+  $("today-empty").hidden = true; $("today").hidden = false;
+  $("ep-meta").textContent = "Episode " + ep.number + " · " + fmtDate(ep.date) + (ep.minutes ? " · " + ep.minutes + " min" : "");
+  $("ep-title").textContent = ep.title;
+  $("ep-summary").textContent = ep.summary || "";
+  renderBody(ep);
+  reactions = {}; $("note").value = ""; $("save-status").textContent = "";
+  renderTopics();
+  if(unsubReact) unsubReact();
+  unsubReact = db.doc("reactions/" + ep.date).onSnapshot(snap => {
+    if(snap.metadata.hasPendingWrites) return;
+    const d = snap.exists ? snap.data() : {};
+    reactions = Object.assign({}, d);
+    if(document.activeElement !== $("note")) $("note").value = d.note || "";
+    renderTopics();
+  }, () => {});
+}
+
+function renderEpisodes() {
+  const box = $("eps"); box.replaceChildren();
+  $("eps-empty").hidden = episodes.length > 0;
+  for(const ep of episodes) {
+    const b = el("button", { class: "ep-link", type: "button" });
+    b.append(el("span", null, fmtDate(ep.date)));
+    const t = el("span"); t.append(el("strong", null, ep.number + ". " + ep.title));
+    if((ep.topics || []).length) t.append(el("small", null, ep.topics.map(x => x.name).join(" · ")));
+    b.append(t);
+    b.addEventListener("click", () => { openEpisode(ep); showTab("today"); window.scrollTo(0, 0); });
+    box.append(b);
+  }
+}
+
+function renderGlossary() {
+  const q = $("gloss-q").value.trim().toLowerCase();
+  const list = glossary.filter(g => !q || (g.term + " " + g.definition).toLowerCase().includes(q));
+  const box = $("terms"); box.replaceChildren();
+  $("gloss-empty").hidden = glossary.length > 0;
+  for(const g of list) {
+    const w = el("div", { class: "term" });
+    w.append(el("dt", null, g.term), el("dd", null, g.definition));
+    if(g.date) w.append(el("dd", { class: "from" }, "Episode " + (g.episode || "") + " · " + fmtDate(g.date)));
+    box.append(w);
+  }
+}
+$("gloss-q").addEventListener("input", renderGlossary);
+
+try { const t = localStorage.getItem("mtg-tab"); if(t) showTab(t); } catch (e) {}
+
+(async () => {
+  db = await claude.use("db");
+  if(!db) return;
+  db.collection("episodes").orderBy("date", "desc").limit(400).onSnapshot(snap => {
+    const first = !current;
+    episodes = snap.docs.map(d => d.data());
+    renderEpisodes();
+    if(episodes.length && (first || current.date === episodes[0].date || !episodes.find(e => e.date === current.date))) {
+      if(first || current.date !== episodes[0].date) openEpisode(episodes[0]);
+    }
+  }, () => {});
+  db.collection("glossary").limit(1000).onSnapshot(snap => {
+    glossary = snap.docs.map(d => d.data()).sort((a, b) => a.term.localeCompare(b.term));
+    renderGlossary();
+  }, () => {});
+})();
+</script>

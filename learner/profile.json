@@ -1,0 +1,50 @@
+{
+  "_about": "Learner model for Mind the Gap. Levels: 0 never heard of it, 1 heard of it, 2 can explain it, 3 has used it. The daily run updates levels, last_covered and next_review from reactions.",
+  "baseline_quiz_date": "2026-09-28",
+  "baseline_notes": [
+    "URL-to-page: knows a request goes to a host and the page comes back; no DNS, HTTP, or browser rendering yet.",
+    "API key vs password: unsure; thinks an API key holds personal info. Needs: identifies an app/program not a person, used for authentication + billing/rate limits, kept secret like a password.",
+    "401: believes it means not found (that's 404). Needs HTTP status code families, 401 unauthorized vs 403 forbidden vs 404.",
+    "LLM: thinks it stands for Language Learning Model (it's Large Language Model). No mental model of next-token prediction yet.",
+    "SQL vs NoSQL: no answer."
+  ],
+  "topics": {
+    "api": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
+    "api-key": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
+    "rest": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
+    "json": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
+    "http-status-codes": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
+    "oauth": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
+    "webhook": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
+    "iaas-paas-saas": {"area": "cloud", "level": 1, "last_covered": null, "next_review": null},
+    "containers-docker": {"area": "cloud", "level": 0, "last_covered": null, "next_review": null},
+    "kubernetes": {"area": "cloud", "level": 0, "last_covered": null, "next_review": null},
+    "dns": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
+    "load-balancer": {"area": "cloud", "level": 0, "last_covered": null, "next_review": null},
+    "aws-azure": {"area": "cloud", "level": 1, "last_covered": null, "next_review": null},
+    "sql-joins": {"area": "data", "level": 0, "last_covered": null, "next_review": null},
+    "etl-elt": {"area": "data", "level": 0, "last_covered": null, "next_review": null},
+    "warehouse-vs-lake": {"area": "data", "level": 1, "last_covered": null, "next_review": null},
+    "sql-vs-nosql": {"area": "data", "level": 0, "last_covered": null, "next_review": null},
+    "encryption-transit-rest": {"area": "security", "level": 0, "last_covered": null, "next_review": null},
+    "sso-saml": {"area": "security", "level": 0, "last_covered": null, "next_review": null},
+    "git-branches-prs": {"area": "dev", "level": 1, "last_covered": null, "next_review": null},
+    "ci-cd": {"area": "dev", "level": 0, "last_covered": null, "next_review": null},
+    "llm-basics": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
+    "tokens-context-window": {"area": "ai", "level": 1, "last_covered": null, "next_review": null},
+    "embeddings": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
+    "rag": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
+    "fine-tuning": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
+    "agents-mcp": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
+    "client-server": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
+    "http-https": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
+    "solutions-engineer-role": {"area": "career", "level": 1, "last_covered": null, "next_review": null}
+  },
+  "suggested_order": [
+    "Week 1 foundations: client-server + http-https + dns (what happens when you type a URL); api + api-key; http-status-codes; json + rest; llm-basics + tokens-context-window.",
+    "Week 2: oauth + sso-saml; webhook; sql-vs-nosql + sql-joins; iaas-paas-saas + aws-azure; embeddings.",
+    "Week 3: containers-docker; ci-cd + git-branches-prs; etl-elt + warehouse-vs-lake; rag; encryption-transit-rest.",
+    "Week 4: load-balancer; kubernetes; fine-tuning; agents-mcp; solutions-engineer-role (discovery calls, demos, POCs).",
+    "Then: expand by reactions and new topics (caching, databases/indexes, auth tokens/JWT, networking, observability, SaaS integration patterns, data pipelines, prompt engineering, AI evals and risks)."
+  ]
+}
