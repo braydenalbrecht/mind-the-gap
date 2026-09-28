@@ -10,7 +10,7 @@ The daily run reads this file before writing each episode. Edit it (or ask Claud
 
 ## Format
 - One narrator. Casual, friendly, like a smart friend who works in tech explaining things over coffee. Plain spoken English, no jargon without defining it first.
-- Length: **~15 minutes** (acceptable range 10–20). Target ~2,000–2,300 spoken words.
+- Length: **~15 minutes** (acceptable range 10–20). Target ~2,500–2,700 spoken words (the voice reads ~172 words per minute).
 - **No quizzes or questions that expect an answer in the audio** — the listener is driving. Pure informative briefing.
 - Written for the ear: no code blocks, URLs, tables, or symbols read aloud. Spell out acronyms the first time ("A-P-I, application programming interface").
 - **Vary the structure day to day** so it doesn't get repetitive. Building blocks to mix: one deep-dive concept; two or three quick concepts; "term of the day"; a current-events segment (tech/AI news from the past few days, explained in terms of concepts the listener is learning); "how a Solutions Engineer would explain this to a customer"; a story/analogy segment; a callback to a past topic (spaced repetition).

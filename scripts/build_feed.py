@@ -13,6 +13,7 @@ import html
 import json
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 import urllib.request
@@ -27,6 +28,7 @@ PAGES = f"https://{OWNER}.github.io/{NAME}"
 VOICE = os.environ.get("TTS_VOICE", "en-US-AndrewMultilingualNeural")
 FALLBACK_VOICE = os.environ.get("TTS_VOICE_FALLBACK", "en-US-AndrewNeural")
 PIPER_MODEL = "en_US-ryan-high"
+FEED_KEEP = 30  # newest episodes served from Pages; older ones stay in releases
 
 SHOW_TITLE = "Mind the Gap"
 SHOW_DESC = "A private daily CS briefing for one listener: the practical computer science, cloud, data, security and AI knowledge a future Solutions Engineer needs, explained casually for the commute."
@@ -85,26 +87,30 @@ def duration_seconds(path):
 
 
 def publish_audio(meta, script):
+    """Make sure the episode MP3 exists as a release asset and locally in _work/.
+
+    Releases are the permanent archive; the feed itself serves the local copy from
+    GitHub Pages, because release downloads are labeled application/octet-stream and
+    reject HEAD requests, which Apple Podcasts refuses to play."""
     tag = f"ep-{meta['date']}"
     fname = f"mind-the-gap-{meta['date']}.mp3"
-    assets = release_assets(tag)
-    if(assets):
-        for a in assets:
-            if(a["name"] == fname):
-                return a["size"], meta.get("duration")
     WORK.mkdir(exist_ok=True)
     out = WORK / fname
+    assets = release_assets(tag)
+    if(assets and any(a["name"] == fname for a in assets)):
+        sh("gh", "release", "download", tag, "--repo", REPO, "--pattern", fname,
+           "--dir", WORK, "--clobber")
+        return out
     if(not synth_edge(script, out)):
         print("edge-tts unavailable, falling back to Piper", flush=True)
         synth_piper(script, out)
-    secs = duration_seconds(out)
     if(assets is None):
         sh("gh", "release", "create", tag, out, "--repo", REPO,
            "--title", f"Episode {meta['number']}: {meta['title']}",
            "--notes", meta.get("summary", ""))
     else:
         sh("gh", "release", "upload", tag, out, "--repo", REPO, "--clobber")
-    return out.stat().st_size, secs
+    return out
 
 
 def spoken_script(meta):
@@ -123,17 +129,20 @@ def fmt_dur(secs):
 
 def main():
     SITE.mkdir(exist_ok=True)
+    (SITE / "audio").mkdir(exist_ok=True)
     items = []
-    metas = sorted(EPISODES.glob("*.json"), reverse=True)
+    metas = sorted(EPISODES.glob("*.json"), reverse=True)[:FEED_KEEP]
     for mpath in metas:
         meta = json.loads(mpath.read_text())
         script = spoken_script(meta)
-        size, secs = publish_audio(meta, script)
+        local = publish_audio(meta, script)
+        served = SITE / "audio" / local.name
+        shutil.copyfile(local, served)
+        size, secs = served.stat().st_size, duration_seconds(served)
         meta["duration"] = secs
         pub = dt.datetime.fromisoformat(meta["date"]).replace(
             hour=10, tzinfo=dt.timezone.utc)
-        url = (f"https://github.com/{REPO}/releases/download/ep-{meta['date']}/"
-               f"mind-the-gap-{meta['date']}.mp3")
+        url = f"{PAGES}/audio/{local.name}"
         notes = meta.get("summary", "")
         if(meta.get("topics")):
             notes += "\n\nTopics: " + ", ".join(t["name"] for t in meta["topics"])
