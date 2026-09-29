@@ -1,0 +1,173 @@
+{
+  "number": 2,
+  "date": "2026-09-29",
+  "title": "Next Token, Please",
+  "summary": "How APIs send data (JSON) and how they're usually organized (REST). Then what a large language model really does, predicting the next token, plus tokens, context windows, and why a new model launched yesterday is pitched on using fewer tokens.",
+  "minutes": 15,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "json",
+      "name": "JSON",
+      "blurb": "Labeled values and lists: the format APIs speak"
+    },
+    {
+      "id": "rest",
+      "name": "REST APIs",
+      "blurb": "Things get addresses, HTTP methods are the verbs"
+    },
+    {
+      "id": "llm-basics",
+      "name": "Large language models",
+      "blurb": "Next-token prediction, training, and hallucinations"
+    },
+    {
+      "id": "tokens-context-window",
+      "name": "Tokens and context windows",
+      "blurb": "The unit AI is priced in, and the model's working desk"
+    }
+  ],
+  "sources": [
+    {
+      "title": "VentureBeat: Anthropic launches Claude Sonnet 5.5 with 30% cost reduction per-task",
+      "url": "https://venturebeat.com/technology/anthropic-launches-claude-sonnet-5-5-with-30-cost-reduction-per-task-due-to-faster-speeds-and-fewer-tool-calls"
+    },
+    {
+      "title": "Anthropic: Claude Sonnet (pricing and context window)",
+      "url": "https://www.anthropic.com/claude/sonnet"
+    },
+    {
+      "title": "MarkTechPost: Anthropic releases Claude Sonnet 5.5 at the same $2/$10 price",
+      "url": "https://www.marktechpost.com/2026/09/28/anthropic-releases-claude-sonnet-5-5-70-6-on-terminal-bench-4-0-at-the-same-2-10-price/"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "key-value-pair",
+      "term": "Key-value pair",
+      "definition": "A label and its value, like \"city\": \"West Chester\". The basic building block of JSON objects."
+    },
+    {
+      "id": "json-object-array",
+      "term": "JSON object / array",
+      "definition": "An object is a set of key-value pairs in curly braces {} describing one thing. An array is an ordered list in square brackets []. They nest inside each other."
+    },
+    {
+      "id": "null",
+      "term": "null",
+      "definition": "A special value meaning \"nothing here\" or \"no value\"."
+    },
+    {
+      "id": "rest",
+      "term": "REST (Representational State Transfer)",
+      "definition": "The most common style of web API: each kind of thing (resource) has a path like /customers/42, and HTTP methods are the verbs: GET read, POST create, PUT/PATCH update, DELETE remove."
+    },
+    {
+      "id": "resource",
+      "term": "Resource (REST)",
+      "definition": "A thing an API exposes, like customers, orders or invoices, each reachable at its own path."
+    },
+    {
+      "id": "stateless",
+      "term": "Stateless",
+      "definition": "Each request carries everything the server needs (including the API key); the server doesn't remember you between requests. Makes it easy to spread traffic across many servers."
+    },
+    {
+      "id": "201",
+      "term": "201 Created",
+      "definition": "Success status code meaning a new resource was created, typically after a POST."
+    },
+    {
+      "id": "llm",
+      "term": "LLM (Large Language Model)",
+      "definition": "A huge mathematical model trained on text that predicts the next token, one at a time. The engine inside ChatGPT, Claude and Gemini. Not \"language learning model\"."
+    },
+    {
+      "id": "parameters",
+      "term": "Parameters / weights",
+      "definition": "The billions of numbers inside a model that get adjusted during training. They are what the model \"knows\"."
+    },
+    {
+      "id": "pre-training",
+      "term": "Pre-training",
+      "definition": "The first training stage: the model guesses the next token across enormous amounts of text and is nudged toward the right answer each time, picking up patterns and facts as a side effect."
+    },
+    {
+      "id": "post-training",
+      "term": "Post-training",
+      "definition": "Later training (including fine-tuning and feedback) that turns a raw text predictor into a helpful assistant that answers questions."
+    },
+    {
+      "id": "hallucination",
+      "term": "Hallucination",
+      "definition": "When a model produces text that sounds right but is false, like a made-up citation. A side effect of predicting plausible text instead of looking facts up."
+    },
+    {
+      "id": "training-cutoff",
+      "term": "Training cutoff",
+      "definition": "The date a model's training data ends. It doesn't know about later events unless you give it that information."
+    },
+    {
+      "id": "token",
+      "term": "Token",
+      "definition": "The chunk of text a model reads and writes: a common word or piece of a word. Roughly 3/4 of an English word; 100 words is about 130 tokens."
+    },
+    {
+      "id": "context-window",
+      "term": "Context window",
+      "definition": "The most tokens a model can consider at once: instructions, conversation history, documents and its own answer together. The model's working desk."
+    },
+    {
+      "id": "input-output-tokens",
+      "term": "Input vs output tokens",
+      "definition": "Input tokens are what you send; output tokens are what the model writes. APIs price them separately, and output usually costs several times more."
+    },
+    {
+      "id": "tool-call",
+      "term": "Tool call",
+      "definition": "When a model asks an outside program to do something (search, run code, call an API) and gets the result back. Each round trip adds tokens."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Warm-up",
+      "heading": "Yesterday, in thirty seconds",
+      "body": "Morning. This is episode two of Mind the Gap.\n\nBefore anything new, a thirty second replay of yesterday, because hearing something twice a day apart is how it actually sticks. When you type a web address, DNS, the Domain Name System, turns the name into an IP address, like looking someone up in your contacts. Your browser opens a secure HTTPS connection, sends an HTTP request, and gets back a response with a status code. Two hundreds mean it worked. Four hundreds mean the client messed up. Five hundreds mean the server broke. Four-oh-one means I don't know who you are. Four-oh-three means I know who you are, and no. And an API key is an ID badge for a program, not for a person. It doesn't hold your personal info. It identifies the app that's calling, so the provider can decide whether to answer, how much to allow, and who to bill.\n\nGood. Today has two halves. The first half finishes the web story: what actually comes back when a program calls an API, which is a format called JSON, and the most common style of designing those APIs, called REST. The second half is the big one. What a large language model actually is, what it's doing when it answers you, and what tokens and context windows are. Then a piece of news from yesterday that ties it all together, and a quick Solutions Engineer scenario about explaining AI pricing to a customer."
+    },
+    {
+      "segment": "Quick concept",
+      "heading": "JSON, the language APIs speak",
+      "body": "Yesterday we said an API response has a body, the actual content. When your browser asks for a web page, the body is HTML, the stuff that describes how a page looks. But when a program asks an API for data, it doesn't want a page. It wants the data, cleanly labeled, so it can use it. And almost every modern API sends that data in a format called JSON.\n\nJSON stands for JavaScript Object Notation. Don't worry about the JavaScript part. It started there, but today every language reads it. JSON is just a way of writing down data as plain text, in a way that both humans and programs can read.\n\nIt's built from two simple ideas. The first is labeled values, which people call key-value pairs. Picture a form. There's a label that says city, and next to it the value, West Chester. There's a label that says temperature, and next to it, sixty-four. In JSON, you'd see the word city in quotes, a colon, then West Chester in quotes. That's one pair. A bunch of those pairs wrapped in curly braces is called an object, which is really just one thing described by its labels. One weather reading. One customer. One order.\n\nThe second idea is lists, which JSON calls arrays. A list of forecasts for the next five days. A list of orders. Lists go in square brackets.\n\nAnd the trick is you can nest them. A customer object can contain an address, which is its own object with street and zip code, and a list of orders, where each order is an object with its own labels. That nesting is how JSON describes pretty much anything.\n\nThere are only a few kinds of values: text, which always goes in quotes, numbers, true or false, a special value called null, meaning nothing here, and then objects and lists. That's the whole language. You can learn to read it in an afternoon, and that's exactly why it won.\n\nHere's where you've already seen it without knowing. In your Power Automate flows, when a step outputs a blob of labeled data with curly braces, and you pick a field out of it, that's JSON. And this podcast itself: every episode is literally one JSON file. It has a label called title, a label called date, a list called topics, and a list called sections, where each section has a heading and a body. A script reads that file, feeds the bodies to a text-to-speech voice, and that's what you're hearing right now. So you are, at this moment, listening to a JSON file."
+    },
+    {
+      "segment": "Quick concept",
+      "heading": "REST, or how APIs are usually organized",
+      "body": "Next, REST. You'll hear people say a REST API, or a RESTful API, constantly. It sounds technical, but the core idea is really common sense.\n\nREST stands for Representational State Transfer, which is a terrible name, so forget it. What it means in practice is this: an API organized around things, and the standard HTTP verbs you already know.\n\nThe things are called resources. Customers. Orders. Invoices. Each kind of thing gets its own address, its own path. So an API might have slash customers for all the customers, and slash customers slash forty-two for the one customer whose ID is forty-two.\n\nThen you use the HTTP methods from yesterday as the verbs. GET means read it. GET slash customers slash forty-two, give me customer forty-two. POST means create something new, so POST to slash customers, with a JSON body describing the new customer, makes a new one. PUT or PATCH means update. DELETE means, well, delete. There's a nice pattern in there: the path says what, the method says what to do with it.\n\nThe reason this matters is predictability. Once you've used one well-designed REST API, you can almost guess how another one works. If a company has slash invoices, you already suspect GET slash invoices lists them and GET slash invoices slash some ID gets one. And the status codes fit right in. Ask for customer nine thousand that doesn't exist, you get a four-oh-four. Forget your API key, four-oh-one. Create something successfully, you often get two-oh-one, which means created.\n\nOne more idea attached to REST is that it's stateless. That means every request carries everything the server needs to handle it, including your API key. The server doesn't remember you between requests. Each request stands on its own. That sounds like a limitation, but it's what lets big services spread traffic across thousands of servers, because any server can handle any request.\n\nFor a Solutions Engineer, REST is the everyday dialect. When a customer asks, can your product integrate with our system, a big part of the answer is: do both sides have REST APIs, and can one call the other with the right key. So, a quick summary of the web half of today. REST is the style. HTTP is the transport. JSON is the format of what goes back and forth."
+    },
+    {
+      "segment": "The big one",
+      "heading": "What a large language model actually is",
+      "body": "Alright, the second half. Large language models.\n\nFirst, the name, because this is a super common mix-up. L L M stands for Large Language Model. Not language learning model. Large, because they're enormous. Language, because they work on text. Model, because it's a mathematical model, a giant function that takes an input and produces an output. ChatGPT, Claude and Gemini are all products built on top of large language models.\n\nNow, what does it actually do? Here's the one sentence to hold on to. A large language model predicts the next piece of text. That's it. You give it some text, and it guesses what comes next.\n\nThink about your phone keyboard's autocomplete. You type I'm running, and it suggests late. It learned that from seeing a lot of text. A large language model is that same basic idea, scaled up to an almost absurd degree. Instead of looking at your last few words, it looks at everything in the conversation so far. And instead of learning from your texts, it learned from a huge chunk of the written internet, books, code and more.\n\nHere's the part that surprises people. It only predicts one small piece at a time. When it writes you a paragraph, it predicts the first piece, adds it to the text, then looks at everything again, including what it just wrote, and predicts the next piece. Then the next. Over and over, hundreds of times, until it predicts that the answer is done. That's why you see answers stream in word by word. It's not a typing animation. It's genuinely being generated one piece at a time.\n\nSo how does next-piece prediction turn into something that can explain REST or write working code? Training. There are roughly two big stages.\n\nThe first is called pre-training. The model starts out as billions of random numbers, which people call parameters, or weights. Then it's shown enormous amounts of text with the next piece hidden, and asked to guess it. Every time it's wrong, the numbers get nudged a tiny bit toward the right answer. Do that trillions of times, and something interesting happens. To get good at predicting the next word in a physics textbook, it kind of has to pick up some physics. To predict the next line of code, it has to pick up patterns of programming. Nobody programs those facts in. They get soaked up as a side effect of getting really good at prediction.\n\nBut a model that only did pre-training would be a weird autocomplete. Ask it a question and it might just continue with three more questions, because that's what text on the internet often looks like. So there's a second stage, often called fine-tuning or post-training, where it's trained on examples of good conversations and on human and automated feedback about which answers are better. That's what turns a raw text predictor into a helpful assistant that answers the question you asked.\n\nHere's the practical consequence, and it's the most important thing in this whole segment. Because the model is predicting likely text, not looking things up in a database, it can produce something that sounds exactly right and is completely wrong. That's called a hallucination. It's not lying, and it's not a bug in the usual sense. It's the model doing its job, producing plausible text, in a spot where plausible and true came apart. A made-up citation looks just like a real one. That's why, when accuracy matters, people give the model real documents to work from, or let it use tools like search, instead of trusting whatever it recalls. We'll get to that technique, called RAG, retrieval-augmented generation, in a couple of weeks.\n\nOne more thing a model doesn't have on its own: memory between conversations, or knowledge of anything after its training ended. It knows what was in its training data up to a cutoff date. Anything newer, it has to be told."
+    },
+    {
+      "segment": "Zoom in",
+      "heading": "Tokens and the context window",
+      "body": "Now, I keep saying piece of text instead of word. That's on purpose, because models don't actually see words. They see tokens.\n\nA token is a chunk of text, usually a common word or a piece of a word. A short, common word like the or cat is usually one token. A longer or rarer word gets split up. Something like unbelievable might become un, believ, and able. Spaces and punctuation get folded in too. The model has a fixed vocabulary of tokens, often in the range of a hundred thousand or more, and every bit of text you send gets chopped into those pieces and turned into numbers before the model ever touches it.\n\nA handy rule of thumb for English: one token is roughly three quarters of a word. Or flip it around, a hundred words is about a hundred and thirty tokens. That's rough, and it varies by language and by model, but it's good enough for estimates.\n\nWhy should you care about tokens? Two reasons, and both come up constantly in real jobs.\n\nReason one: money. AI companies charge for their models by the token, through their APIs. Yes, the same APIs and API keys from yesterday. You send a request with your key, the body is JSON containing your prompt, and the response is JSON containing the answer plus a count of how many tokens went in and how many came out. And there are usually two prices. Input tokens, what you send, and output tokens, what the model writes back. Output tokens almost always cost more, often several times more, because generating each one means running that whole prediction loop again.\n\nReason two: the context window. The context window is the maximum amount of text, measured in tokens, the model can look at in one go. That's your instructions, the whole conversation history, any documents you paste in, and the answer it's writing, all together. Think of it as the model's working desk. Whatever's on the desk, it can see. Whatever's not on the desk, it can't. When a long chat seems to forget something from way back at the start, that's often the desk filling up, and older stuff getting trimmed off to make room.\n\nContext windows have grown a lot. A few years ago a few thousand tokens was normal. Now the bigger models can take hundreds of thousands, some a million or more, which is enough to drop in several whole books. But bigger isn't free. More tokens in means more cost and more time, and models can still get a bit worse at finding one small detail buried in a gigantic pile. So a big part of using AI well is putting the right things on the desk, not everything."
+    },
+    {
+      "segment": "In the news",
+      "heading": "A new model, sold by the token",
+      "body": "Here's a fresh, real example of all of this. Yesterday, Anthropic, the company that makes Claude, released a new model called Claude Sonnet five point five.\n\nLook at how the launch was described, because it's all in the vocabulary you just learned. The price is quoted per million tokens: two dollars per million input tokens, and ten dollars per million output tokens. Notice output is five times the price of input. That's the pattern I just described. And that's the same price as the model it replaces, Sonnet five.\n\nSo what's the pitch, if the price per token didn't change? According to Anthropic, the new model writes its output more than thirty percent faster, and can cut the total cost of finishing a task by up to about thirty percent. The way it gets cheaper isn't a lower price per token. It's using fewer tokens, and fewer tool calls, to get the same job done. Tool calls, by the way, are when a model asks an outside program to do something, like run a search or run code, and each of those round trips adds more tokens to the conversation. A couple of early customers quoted in coverage reported double-digit percentage drops in the tokens they used.\n\nThe Sonnet line also works with a context window of around a million tokens, which is that huge working desk.\n\nHere's the takeaway, beyond this one product. When you're comparing AI models for a real project, the price per token is only half the math. The other half is how many tokens the model burns to get the job done. A model that's cheaper per token but rambles, or takes ten steps where another takes four, can end up costing more. That's exactly the kind of thing a customer will want someone to explain to them. Which brings us to the next segment."
+    },
+    {
+      "segment": "Solutions Engineer corner",
+      "heading": "Why is my AI bill so high?",
+      "body": "Picture this. You're a Solutions Engineer at a software company, and your product has an AI feature that calls a large language model behind the scenes. A customer's operations manager emails: our AI costs doubled this month, and we didn't add any users. What's going on?\n\nA weak answer is technical jargon: well, your token consumption increased. That's true, and it tells them nothing.\n\nA strong answer starts by translating. Something like: the AI is billed by how much text it reads and writes, measured in small chunks called tokens, roughly three quarters of a word each. And the text it reads isn't just the question your team types. It's everything we send along with it for context.\n\nThen you go hunting, and you already know where to look. Did someone start attaching big documents to every request? That's a pile of input tokens every single time. Are conversations getting really long? Remember, the whole history gets sent again with every new message, so a long chat gets more expensive with each turn. Did a setting change so the AI writes much longer answers? Output tokens are the pricey ones. Did an automation start running in a loop, calling the AI hundreds of times an hour? That last one is more common than you'd think, and it's the same lesson as a leaked API key. The meter runs no matter who or what is making the calls.\n\nAnd then you offer fixes in business terms. Trim what gets sent. Summarize old conversation history instead of resending all of it. Cap the answer length. Maybe route simple requests to a smaller, cheaper model. And set usage alerts, so next time they hear about it early and not on the invoice.\n\nNotice what happened. You didn't need to explain neural networks. You needed one good mental model, text in and text out, both on the meter, and the ability to say it in plain English. That's the job."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Let's pack it up.\n\nJSON is how APIs send data: labeled values in curly braces, lists in square brackets, nested as deep as you need. This podcast is a JSON file.\n\nREST is the most common way APIs are organized: things get addresses, like slash customers slash forty-two, and the HTTP methods are the verbs. GET reads, POST creates, PUT or PATCH updates, DELETE deletes. Each request stands on its own and carries its own key.\n\nA large language model, L L M, Large Language Model, predicts the next token, one at a time, over and over. Pre-training on huge amounts of text teaches it patterns and facts as a side effect. Post-training turns it into a helpful assistant. Because it produces plausible text instead of looking things up, it can confidently make things up, which is called hallucinating.\n\nA token is a chunk of text, about three quarters of a word. Models are priced per token, and output costs more than input. The context window is the model's working desk, everything it can see at once, measured in tokens.\n\nAnd the news: a new model launched yesterday at the same price per token, pitched as cheaper overall because it uses fewer tokens per task. Price per token times tokens per task. That's the real cost.\n\nWhen you're parked, open the text version and mark how each topic landed. Tomorrow we'll keep building. Drive safe."
+    }
+  ]
+}

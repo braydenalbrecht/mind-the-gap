@@ -9,36 +9,186 @@
     "SQL vs NoSQL: no answer."
   ],
   "topics": {
-    "api": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
-    "api-key": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
-    "rest": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
-    "json": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
-    "http-status-codes": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
-    "oauth": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
-    "webhook": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
-    "iaas-paas-saas": {"area": "cloud", "level": 1, "last_covered": null, "next_review": null},
-    "containers-docker": {"area": "cloud", "level": 0, "last_covered": null, "next_review": null},
-    "kubernetes": {"area": "cloud", "level": 0, "last_covered": null, "next_review": null},
-    "dns": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
-    "load-balancer": {"area": "cloud", "level": 0, "last_covered": null, "next_review": null},
-    "aws-azure": {"area": "cloud", "level": 1, "last_covered": null, "next_review": null},
-    "sql-joins": {"area": "data", "level": 0, "last_covered": null, "next_review": null},
-    "etl-elt": {"area": "data", "level": 0, "last_covered": null, "next_review": null},
-    "warehouse-vs-lake": {"area": "data", "level": 1, "last_covered": null, "next_review": null},
-    "sql-vs-nosql": {"area": "data", "level": 0, "last_covered": null, "next_review": null},
-    "encryption-transit-rest": {"area": "security", "level": 0, "last_covered": null, "next_review": null},
-    "sso-saml": {"area": "security", "level": 0, "last_covered": null, "next_review": null},
-    "git-branches-prs": {"area": "dev", "level": 1, "last_covered": null, "next_review": null},
-    "ci-cd": {"area": "dev", "level": 0, "last_covered": null, "next_review": null},
-    "llm-basics": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
-    "tokens-context-window": {"area": "ai", "level": 1, "last_covered": null, "next_review": null},
-    "embeddings": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
-    "rag": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
-    "fine-tuning": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
-    "agents-mcp": {"area": "ai", "level": 0, "last_covered": null, "next_review": null},
-    "client-server": {"area": "web", "level": 1, "last_covered": null, "next_review": null},
-    "http-https": {"area": "web", "level": 0, "last_covered": null, "next_review": null},
-    "solutions-engineer-role": {"area": "career", "level": 1, "last_covered": null, "next_review": null}
+    "api": {
+      "area": "web",
+      "level": 1,
+      "last_covered": "2026-09-28",
+      "next_review": null
+    },
+    "api-key": {
+      "area": "web",
+      "level": 1,
+      "last_covered": "2026-09-28",
+      "next_review": null
+    },
+    "rest": {
+      "area": "web",
+      "level": 0,
+      "last_covered": "2026-09-29",
+      "next_review": null
+    },
+    "json": {
+      "area": "web",
+      "level": 1,
+      "last_covered": "2026-09-29",
+      "next_review": null
+    },
+    "http-status-codes": {
+      "area": "web",
+      "level": 1,
+      "last_covered": "2026-09-28",
+      "next_review": null
+    },
+    "oauth": {
+      "area": "web",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "webhook": {
+      "area": "web",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "iaas-paas-saas": {
+      "area": "cloud",
+      "level": 1,
+      "last_covered": null,
+      "next_review": null
+    },
+    "containers-docker": {
+      "area": "cloud",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "kubernetes": {
+      "area": "cloud",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "dns": {
+      "area": "web",
+      "level": 0,
+      "last_covered": "2026-09-28",
+      "next_review": null
+    },
+    "load-balancer": {
+      "area": "cloud",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "aws-azure": {
+      "area": "cloud",
+      "level": 1,
+      "last_covered": null,
+      "next_review": null
+    },
+    "sql-joins": {
+      "area": "data",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "etl-elt": {
+      "area": "data",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "warehouse-vs-lake": {
+      "area": "data",
+      "level": 1,
+      "last_covered": null,
+      "next_review": null
+    },
+    "sql-vs-nosql": {
+      "area": "data",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "encryption-transit-rest": {
+      "area": "security",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "sso-saml": {
+      "area": "security",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "git-branches-prs": {
+      "area": "dev",
+      "level": 1,
+      "last_covered": null,
+      "next_review": null
+    },
+    "ci-cd": {
+      "area": "dev",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "llm-basics": {
+      "area": "ai",
+      "level": 0,
+      "last_covered": "2026-09-29",
+      "next_review": null
+    },
+    "tokens-context-window": {
+      "area": "ai",
+      "level": 1,
+      "last_covered": "2026-09-29",
+      "next_review": null
+    },
+    "embeddings": {
+      "area": "ai",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "rag": {
+      "area": "ai",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "fine-tuning": {
+      "area": "ai",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "agents-mcp": {
+      "area": "ai",
+      "level": 0,
+      "last_covered": null,
+      "next_review": null
+    },
+    "client-server": {
+      "area": "web",
+      "level": 1,
+      "last_covered": "2026-09-28",
+      "next_review": null
+    },
+    "http-https": {
+      "area": "web",
+      "level": 0,
+      "last_covered": "2026-09-28",
+      "next_review": null
+    },
+    "solutions-engineer-role": {
+      "area": "career",
+      "level": 1,
+      "last_covered": null,
+      "next_review": null
+    }
   },
   "suggested_order": [
     "Week 1 foundations: client-server + http-https + dns (what happens when you type a URL); api + api-key; http-status-codes; json + rest; llm-basics + tokens-context-window.",
@@ -46,5 +196,6 @@
     "Week 3: containers-docker; ci-cd + git-branches-prs; etl-elt + warehouse-vs-lake; rag; encryption-transit-rest.",
     "Week 4: load-balancer; kubernetes; fine-tuning; agents-mcp; solutions-engineer-role (discovery calls, demos, POCs).",
     "Then: expand by reactions and new topics (caching, databases/indexes, auth tokens/JWT, networking, observability, SaaS integration patterns, data pipelines, prompt engineering, AI evals and risks)."
-  ]
+  ],
+  "applied_reactions": []
 }
