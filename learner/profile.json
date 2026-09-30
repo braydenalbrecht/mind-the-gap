@@ -190,12 +190,39 @@
       "next_review": null
     }
   },
-  "suggested_order": [
-    "Week 1 foundations: client-server + http-https + dns (what happens when you type a URL); api + api-key; http-status-codes; json + rest; llm-basics + tokens-context-window.",
-    "Week 2: oauth + sso-saml; webhook; sql-vs-nosql + sql-joins; iaas-paas-saas + aws-azure; embeddings.",
-    "Week 3: containers-docker; ci-cd + git-branches-prs; etl-elt + warehouse-vs-lake; rag; encryption-transit-rest.",
-    "Week 4: load-balancer; kubernetes; fine-tuning; agents-mcp; solutions-engineer-role (discovery calls, demos, POCs).",
-    "Then: expand by reactions and new topics (caching, databases/indexes, auth tokens/JWT, networking, observability, SaaS integration patterns, data pipelines, prompt engineering, AI evals and risks)."
+  "applied_reactions": [],
+  "queue_note": "One main topic per episode, in this order unless reactions or notes say otherwise. Reactions and listener notes always jump the queue. Remove a topic when it becomes an episode's main topic.",
+  "queue": [
+    "api",
+    "api-key",
+    "rest",
+    "llm-basics",
+    "http-status-codes",
+    "webhook",
+    "oauth",
+    "iaas-paas-saas",
+    "sql-vs-nosql",
+    "sql-joins",
+    "embeddings",
+    "sso-saml",
+    "aws-azure",
+    "containers-docker",
+    "ci-cd",
+    "git-branches-prs",
+    "etl-elt",
+    "warehouse-vs-lake",
+    "rag",
+    "encryption-transit-rest",
+    "load-balancer",
+    "fine-tuning",
+    "agents-mcp",
+    "kubernetes",
+    "solutions-engineer-role"
   ],
-  "applied_reactions": []
+  "queue_later": "Then add new topics as needed: caching, databases/indexes, auth tokens/JWT, networking, observability, SaaS integration patterns, data pipelines, prompt engineering, AI evals and risks.",
+  "listener_notes": [
+    "2026-09-30: Learns best through examples. Wants real-life scenarios/applications, no unnecessary fun facts, one topic drilled per episode, callbacks to earlier topics in later episodes.",
+    "2026-09-30 (reactions to ep 1-2): APIs and API keys still shaky; wants real-world usage, what applications use them, and how to create a key. REST 'lost me': needs what it is, how it's used, and examples.",
+    "Planned order (overrides the usual ❓-first rule because REST depends on APIs): Thu Oct 1 = APIs re-taught from scratch as the only topic, built on real apps (weather app, Uber using maps and payment APIs, Log in with Google, Power Automate connectors). Fri Oct 2 = API keys: what they're for, and step by step how you actually create one and where it goes. Sat Oct 3 recap = APIs and API keys with new examples. Mon Oct 5 = REST from scratch, slowly, as 'the most common way APIs are organized', with examples. Oauth and webhooks (crammed into ep 3) get their own full episodes later."
+  ]
 }
