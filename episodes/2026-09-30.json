@@ -1,0 +1,178 @@
+{
+  "number": 3,
+  "date": "2026-09-30",
+  "title": "The Valet Key",
+  "summary": "OAuth: how an app gets limited access to your stuff without your password (scopes, consent screens, access and refresh tokens, and where 401 vs 403 come from). Then webhooks versus polling, and how OpenAI's DevDay announcements use both ideas.",
+  "minutes": 17,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "oauth",
+      "name": "OAuth",
+      "blurb": "The valet key: limited, revocable access without your password"
+    },
+    {
+      "id": "webhook",
+      "name": "Webhooks",
+      "blurb": "Don't call us, we'll call you: push instead of polling"
+    },
+    {
+      "id": "api-key",
+      "name": "API keys (callback)",
+      "blurb": "How API keys differ from OAuth access tokens"
+    }
+  ],
+  "sources": [
+    {
+      "title": "OpenAI: DevDay 2026 recap",
+      "url": "https://openai.com/index/devday-2026-recap/"
+    },
+    {
+      "title": "BGR: Everything OpenAI announced at DevDay 2026",
+      "url": "https://www.bgr.com/2272332/openai-devday-2026-announcements/"
+    },
+    {
+      "title": "OAuth 2.0 (oauth.net)",
+      "url": "https://oauth.net/2/"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "oauth",
+      "term": "OAuth (OAuth 2.0)",
+      "definition": "An open standard that lets a person give an app limited access to their data in another service without sharing their password. The app gets a token with specific permissions (scopes) that can be revoked. The valet key."
+    },
+    {
+      "id": "authn-vs-authz",
+      "term": "Authentication vs authorization",
+      "definition": "Authentication (authn) proves who you are. Authorization (authz) decides what you're allowed to do. OAuth is about authorization; 401 is an authentication failure, 403 an authorization failure."
+    },
+    {
+      "id": "consent-screen",
+      "term": "Consent screen",
+      "definition": "The page from the provider (Google, Microsoft...) that shows which permissions an app is asking for and lets you allow or cancel."
+    },
+    {
+      "id": "scope",
+      "term": "Scope",
+      "definition": "One named permission an app requests in OAuth, like read calendar or send email. Good apps ask for as few as possible (least privilege)."
+    },
+    {
+      "id": "authorization-code",
+      "term": "Authorization code",
+      "definition": "A short-lived, one-time code the provider sends back to the app after you click allow. The app's server trades it, plus its own client secret, for tokens. The coat-check ticket."
+    },
+    {
+      "id": "client-secret",
+      "term": "Client ID / client secret",
+      "definition": "The identity and password an app registers with an OAuth provider ahead of time, so the provider knows which app is asking for tokens. Kept on the server, never in the browser."
+    },
+    {
+      "id": "access-token",
+      "term": "Access token",
+      "definition": "The credential an app sends with each API call after OAuth. Tied to a person, an app and a set of scopes; usually expires quickly (often about an hour) and can be revoked. Commonly sent as a 'Bearer' token in the Authorization header."
+    },
+    {
+      "id": "refresh-token",
+      "term": "Refresh token",
+      "definition": "A long-lived, sensitive token an app uses to get new access tokens when old ones expire, without asking the user again."
+    },
+    {
+      "id": "revoke",
+      "term": "Revoke",
+      "definition": "To cancel a token or an app's access, e.g. removing a connected app in your Google account settings. Other apps keep working."
+    },
+    {
+      "id": "openid-connect",
+      "term": "OpenID Connect (OIDC)",
+      "definition": "A thin identity layer on top of OAuth that tells the app who you are. What most 'Sign in with Google/Microsoft' buttons use."
+    },
+    {
+      "id": "polling",
+      "term": "Polling",
+      "definition": "Repeatedly asking a system 'anything new?' on a timer. Simple but wasteful and slower to notice changes. Podcast apps poll RSS feeds."
+    },
+    {
+      "id": "webhook",
+      "term": "Webhook",
+      "definition": "An API call in reverse: you give a service a URL, and it sends an HTTP POST (usually JSON) to it when an event happens. Push instead of polling."
+    },
+    {
+      "id": "event",
+      "term": "Event",
+      "definition": "Something that happened in a system (invoice paid, form submitted, code pushed) that other systems can react to."
+    },
+    {
+      "id": "webhook-signature",
+      "term": "Webhook signature",
+      "definition": "A value the sender computes from the message and a shared secret, so the receiver can verify the webhook really came from that sender and wasn't altered."
+    },
+    {
+      "id": "idempotent",
+      "term": "Idempotent",
+      "definition": "Safe to do more than once with the same result. Webhook receivers should be idempotent because providers retry and the same event can arrive twice."
+    },
+    {
+      "id": "mcp",
+      "term": "MCP (Model Context Protocol)",
+      "definition": "An open standard for connecting AI assistants to outside tools and data sources. Full episode coming later."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Cold open",
+      "heading": "The valet key",
+      "body": "Morning, and welcome back to Mind the Gap. This is episode three, and today starts with a car, which feels right, since you're sitting in one.\n\nSome cars come with two keys. There's the normal key, which does everything: starts the engine, opens the trunk, opens the glove box, lets you drive as far and as fast as you want. And then there's a second, smaller key called a valet key. You hand the valet key to the person parking your car at a restaurant. It starts the engine and it opens the driver's door, and that's about it. It won't open the trunk. It won't open the glove box. On some cars it even limits the top speed.\n\nThink about why that key exists. You need a stranger to do one specific job with your car. You don't want to give them everything you own to get that job done. So instead of handing over your master key, you hand over a limited key, for a limited job, that you can take back when you leave.\n\nHold on to that picture, because that valet key is basically today's deep dive. It's called OAuth, and it's one of the most important ideas a Solutions Engineer will run into, because it sits underneath almost every time one app connects to another app on your behalf. After that, a quick concept called webhooks, which is how apps tap each other on the shoulder when something happens. And then some news from OpenAI's developer conference yesterday that happens to use both of these ideas at once."
+    },
+    {
+      "segment": "Callback",
+      "heading": "Keys, badges, and two error codes",
+      "body": "Quick rewind to Monday first, because today builds straight on it.\n\nOn Monday we said an A-P-I key is like an ID badge for a program. It's a long secret string that tells the service which app is calling, so the service can decide whether to answer, how many calls to allow, and who to bill. It identifies a program, not a person, and you guard it like a password.\n\nWe also covered two status codes that people mix up constantly. A four-oh-one means \"I don't know who you are.\" Your credentials are missing, wrong, or expired. A four-oh-three means \"I know exactly who you are, and you're not allowed to do this.\" Keep both of those in your pocket, because both of them show up again in about ten minutes, and they'll make a lot more sense by then.\n\nNow here's the gap an A-P-I key doesn't fill. An A-P-I key is great when a program is acting as itself. The podcast script calling a text-to-speech service is a good example. But what about when a program needs to act on behalf of a person? Say a scheduling app wants to read your Google Calendar. The app isn't you, and it has no business knowing your Google password. That exact situation is where OAuth comes in."
+    },
+    {
+      "segment": "The big one",
+      "heading": "OAuth, part one: the bad old days",
+      "body": "OAuth is spelled O-A-U-T-H, and it's pronounced \"oh-auth.\" The \"auth\" part stands for authorization. There's a version number you'll see sometimes, OAuth two point oh, and that's the one everybody means today.\n\nTo see why it exists, picture how things worked before it. Around fifteen or twenty years ago, if a new app wanted to find your friends from your email contacts, it would literally ask you to type in your email address and your email password. Then the app would log in as you and go read your contacts.\n\nThink about everything wrong with that. First, the app now has your actual password, and it can do anything you can do. Read every email, send email as you, delete your account. It's the master key, not the valet key. Second, if that app gets hacked, your password leaks along with everyone else's. Third, there's no clean way to take access back. If you change your password to kick that one app out, you also break every other thing that used it. And fourth, your email provider can't even tell the difference between you logging in and the app logging in, so it can't protect you.\n\nThe people who designed OAuth wanted to fix all four of those problems at once. The goal is simple to say: let a person give an app limited access to their stuff somewhere else, without ever giving that app their password. That's the valet key. Limited, specific, and revocable, which just means you can take it back."
+    },
+    {
+      "segment": "The big one",
+      "heading": "OAuth, part two: the dance",
+      "body": "So how does it actually work? People call it the OAuth dance, because there's a bit of back and forth. Let's walk it slowly, using that scheduling app that wants to read your Google Calendar.\n\nStep one. Inside the scheduling app, you click a button that says something like \"Connect your Google Calendar.\" The app doesn't pop up its own password box. Instead it sends your browser over to Google. That matters. You're now on Google's real website, typing your password into Google, the only place that should ever see it.\n\nStep two. Google checks who you are. If you're already signed in, this takes a second. Then Google shows you what's called a consent screen. You've seen these a hundred times. It says something like, \"Scheduling App wants to see your calendar events. Allow or cancel.\" That list of permissions has a name. Each item is called a scope. A scope is one specific thing the app is allowed to do, like read your calendar, but not edit it, and definitely not read your email. The app asks for scopes, and you see exactly what you're agreeing to. Scopes are the part of the valet key that says \"driver's door yes, trunk no.\"\n\nStep three. You click allow. Google sends your browser back to the scheduling app, and it tucks a short-lived, one-time code into that trip back. Think of it like a claim ticket at a coat check. On its own it's not the coat, and it expires fast.\n\nStep four happens behind the scenes, server to server, where you never see it. The scheduling app's server takes that claim ticket to Google and says, \"Here's the code, and here's proof that I really am Scheduling App.\" That proof is the app's own secret, which it registered with Google ahead of time. Google checks both, and hands back the real prize: an access token.\n\nStep five. From now on, whenever the scheduling app wants your calendar, it calls Google's calendar A-P-I and includes that access token with the request. Google looks at the token and knows three things: which app is asking, which person it's asking for, and which scopes that person approved. Notice what never happened in all five steps. The scheduling app never saw your password. Not once."
+    },
+    {
+      "segment": "The big one",
+      "heading": "OAuth, part three: tokens that expire",
+      "body": "Let's zoom in on the access token, because it's the thing you'll actually deal with on the job.\n\nAn access token looks a lot like an A-P-I key, just a long string of characters. But it behaves differently in three important ways. One, it's tied to a person and a set of scopes, not just to a program. Two, it's short-lived. Access tokens commonly expire after something like an hour. Three, it can be revoked. If you go into your Google account settings, there's a page listing every app you've connected, and you can remove any of them. The token dies, and the other apps keep working.\n\nYou might be wondering how an app keeps working for months if the token dies every hour. That's the job of a second token, called a refresh token. When the access token expires, the app quietly sends the refresh token to Google and gets a fresh access token back, without bothering you. The refresh token is long-lived and very sensitive, so a well-built app stores it carefully on its server.\n\nAnd here's the payoff from the callback earlier. When an access token has expired or been revoked, the A-P-I answers with a four-oh-one. \"I don't know who you are anymore.\" The fix is to refresh the token, or, if you pulled the app's access, to connect it again. But if the token is perfectly valid and the app tries something outside its scopes, like trying to delete an event when you only granted read access, that's a four-oh-three. \"I know who you are, and you're not allowed to do that.\" Same two codes from Monday, and now you know exactly what's behind each one.\n\nOne last distinction, because interviewers love it. Authentication is proving who you are. Authorization is deciding what you're allowed to do. OAuth, on its own, is about authorization, handing out limited permission. The \"Sign in with Google\" buttons you see everywhere add a thin identity layer on top of OAuth, called OpenID Connect, so the app also learns who you are. We'll get to single sign-on in more depth soon. For now: OAuth is the valet key. It's about what, not who."
+    },
+    {
+      "segment": "Term of the day",
+      "heading": "Scope",
+      "body": "Our term of the day is one you just heard, and it's worth giving it its own spotlight: scope.\n\nA scope is a single named permission that an app asks for in OAuth. Read calendar. Send email. View files. Every scope an app requests shows up on that consent screen. The best apps ask for the fewest scopes they can get away with. That's the least privilege idea from Monday, showing up again in a new costume. Give every program only the access it needs, nothing more.\n\nWhy does a Solutions Engineer care? Because in real deals, a customer's security team will read your product's scope list line by line. If your app asks for full access to someone's entire email account when it only needs to read calendar events, that can stall a sale for weeks. Knowing which scopes your product requests, and why each one is needed, is a very practical superpower."
+    },
+    {
+      "segment": "Quick concept",
+      "heading": "Webhooks: don't call us, we'll call you",
+      "body": "Switching gears to our quick concept. Webhooks.\n\nStart with a problem. Say your app needs to know the moment a customer pays an invoice in a payment system. The obvious approach is to ask. Every minute, your app calls the payment A-P-I and says, \"Anything new? Anything new?\" That's called polling. It works, but it's wasteful. Almost every call comes back with nothing. It's also slow, because if something happens right after you check, you won't find out until the next check.\n\nPolling is a kid in the back seat asking \"are we there yet\" every thirty seconds. A webhook is the driver saying, \"I'll tell you when we're there.\"\n\nHere's how a webhook works. Ahead of time, your app gives the payment system a web address, a U-R-L, that it controls, and says, \"When an invoice gets paid, send the details here.\" Then, the moment an invoice is paid, the payment system sends an H-T-T-P request to that address, a POST request, carrying the details as J-S-O-N. Your app receives it, reacts, and answers with a two-hundred to say \"got it.\" So a webhook is really just an A-P-I call running in reverse. Instead of you calling them, they call you.\n\nThree practical things come up every time. First, your address has to be reachable from the internet, because the other system needs to find it. Second, since anyone could send a request to that address, good webhook providers sign each message using a secret the two of you share, and your app checks that signature before trusting it. Third, networks hiccup, so providers retry when they don't get a quick \"got it.\" That means the same event can arrive twice, and a well-built receiver notices duplicates and doesn't, say, ship an order twice.\n\nHere's a familiar example. In Power Automate, a flow starts with a trigger, like \"when a new form response comes in.\" Under the hood, some triggers are powered by webhooks and some by polling on a timer. Same goal, two different ways of noticing that something happened."
+    },
+    {
+      "segment": "In the news",
+      "heading": "OpenAI's DevDay: valet keys and doorbells for AI",
+      "body": "Now the news. Yesterday, Tuesday, OpenAI held its annual developer conference, called DevDay, and made more than twenty announcements. Two of them line up almost perfectly with today's topics, so let's look at those.\n\nThe first is called Sign in with ChatGPT. According to OpenAI's own recap, you can sign in to a range of other tools with your ChatGPT account, so you connect things faster and manage fewer passwords. OpenAI also says you can use your ChatGPT plan's allowance across sixteen partner tools, including Notion, Vercel, and Cognition's coding agent Devin, and control how much each one is allowed to use. Listen to that through today's lens. Sign in with your ChatGPT account instead of making a new password. Limited access handed to another app. A dial for how much each app can use. That's the same family of ideas as OAuth and scopes: delegated, limited, and controllable access. OpenAI's recap doesn't spell out the plumbing, but sign-in buttons like this are typically built on OAuth plus that identity layer we mentioned.\n\nThe second announcement is support for something called the proposed M-C-P Events specification. M-C-P stands for Model Context Protocol, an open standard for connecting A-I assistants to outside tools and data. We'll give it a full episode later. The point today is the word \"events.\" OpenAI says this lets plugins start automations when something happens in a connected app. Their example is asking ChatGPT to watch for new tasks on a project board, and when one comes in, it reads the linked documents and drafts a plan, even while you're away. That's the webhook idea, applied to A-I. Instead of the assistant constantly checking the project board, the board taps it on the shoulder when something new arrives.\n\nOpenAI also introduced what it calls dots, always-on agents that work on your behalf in the background. Always-on agents are exactly the kind of thing that needs both ideas from today. They need a valet key to act in your apps, and they need a doorbell to know when to wake up. The more an A-I acts for you, the more OAuth scopes and webhooks stop being plumbing and start being the whole trust story."
+    },
+    {
+      "segment": "Behind the scenes",
+      "heading": "This podcast, polling and pushing",
+      "body": "Quick detour to use this very show as an example, because it does both of today's tricks.\n\nWhen a new episode gets written each morning, it's saved to a GitHub repository, and that save is an event. GitHub notices it and immediately kicks off an automated job, which turns the script into audio and republishes the podcast feed. Nobody's checking every minute for new scripts. The event itself starts the work. That's the push-style, don't-call-us-we'll-call-you model.\n\nBut your podcast app works the other way. Apple Podcasts or Overcast don't get a notification from GitHub. They check the show's feed on their own schedule, to see if there's anything new. That's polling. It's the reason a new episode sometimes takes a little while to show up in your app, even though the audio was ready earlier. Same show, both patterns, and now you know why each one fits where it is."
+    },
+    {
+      "segment": "Customer call",
+      "heading": "Why not just use my password?",
+      "body": "Let's run a quick Solutions Engineer scenario. You're on a call with a small business owner, and your product needs to connect to their accounting software. They say, \"Honestly, this OAuth screen is annoying. Can't I just type my accounting password into your app and be done with it?\"\n\nHere's how you might explain it, no jargon. \"I get it, one more screen. But this way, our app never sees your password at all. You approve exactly what we can touch, which is reading invoices, not moving money. If you ever stop using us, you click remove in your accounting settings and we're cut off instantly, without you changing your password or breaking anything else. And if we were ever breached, there's no password of yours sitting in our systems to steal. It's the valet key, not the master key.\"\n\nThat answer does three things customers care about. It lowers their risk, it gives them control, and it makes you sound like someone who's thinking about their security instead of your convenience. Security teams tend to say yes faster to products that ask for less."
+    },
+    {
+      "segment": "Out the door",
+      "heading": "Pocket version",
+      "body": "Here's the pocket version of today.\n\nOAuth lets a person give an app limited access to their stuff somewhere else, without ever sharing their password. It's the valet key. The app sends you to the real provider, you log in there, you approve a list of scopes on a consent screen, and the app gets a short-lived access token. A refresh token quietly gets new access tokens. You can revoke access anytime.\n\nAn expired or revoked token gets a four-oh-one. A valid token trying something outside its scopes gets a four-oh-three. Authentication is who you are. Authorization is what you're allowed to do. OAuth is about authorization.\n\nA webhook is an A-P-I call in reverse. Instead of polling, \"anything new, anything new,\" you hand the other system an address, and it calls you when something happens. Verify the signature, answer fast, and expect the occasional duplicate.\n\nAnd in the news, OpenAI's Sign in with ChatGPT and its support for M-C-P Events show both ideas moving into A-I agents: limited delegated access, and waking up on events.\n\nTomorrow we'll keep building on this. That's Mind the Gap for today. Drive safe, and I'll see you tomorrow."
+    }
+  ]
+}
