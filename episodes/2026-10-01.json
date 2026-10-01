@@ -1,0 +1,127 @@
+{
+  "number": 4,
+  "date": "2026-10-01",
+  "title": "The Drive-Thru Window",
+  "summary": "APIs, re-taught from scratch as the only topic: the drive-thru picture (menu, window, private kitchen), endpoints and docs, then four real walkthroughs (a weather app, an Uber ride, Log in with Google, Power Automate connectors) and where Solutions Engineers run into APIs every week.",
+  "minutes": 15,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "api",
+      "name": "APIs (from scratch)",
+      "blurb": "A window one program uses to ask another program for something"
+    },
+    {
+      "id": "json",
+      "name": "JSON (callback)",
+      "blurb": "The labeled data that comes back in the bag"
+    },
+    {
+      "id": "client-server",
+      "name": "Client and server (callback)",
+      "blurb": "Request and response, but between programs"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Microsoft Learn: Connectors overview",
+      "url": "https://learn.microsoft.com/en-us/connectors/connectors"
+    },
+    {
+      "title": "Apple Developer: WeatherKit",
+      "url": "https://developer.apple.com/weatherkit/"
+    },
+    {
+      "title": "Stripe API reference",
+      "url": "https://docs.stripe.com/api"
+    },
+    {
+      "title": "Twilio Messaging API docs",
+      "url": "https://www.twilio.com/docs/messaging"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "endpoint",
+      "term": "Endpoint",
+      "definition": "A specific address in an API for one thing you can ask for, like 'current weather' or 'create a charge'. One item on the API's menu."
+    },
+    {
+      "id": "api-docs",
+      "term": "API documentation (docs)",
+      "definition": "The published guide to an API: every endpoint, what to send, and what comes back. The menu board, written down."
+    },
+    {
+      "id": "integration",
+      "term": "Integration",
+      "definition": "Two products connected so they share data or trigger each other automatically, almost always through APIs. 'Does it integrate with Salesforce?' means 'can these two talk through APIs?'"
+    },
+    {
+      "id": "connector",
+      "term": "Connector (Power Automate)",
+      "definition": "A friendly, prebuilt block that wraps a service's API, so a flow can make real API calls without code."
+    },
+    {
+      "id": "third-party-api",
+      "term": "Third-party API",
+      "definition": "An API run by another company that your app calls for a specialty, like payments (Stripe) or text messages (Twilio), instead of building it yourself."
+    },
+    {
+      "id": "postman",
+      "term": "Postman",
+      "definition": "A popular free tool for sending API requests and viewing responses without writing code. Common in demos and troubleshooting."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Starting over",
+      "heading": "APIs, from the ground up",
+      "body": "Morning, and welcome to Mind the Gap. This is episode four.\n\nToday is a little different. You told me, pretty clearly, that A-P-Is still feel fuzzy. What they actually are, where they show up in real life, and how anyone uses them. That's completely fair. On Monday they got squeezed into the end of a long episode, and on Tuesday we stacked more ideas right on top before the foundation was solid. That's on me, not you.\n\nSo today there is exactly one topic. A-P-Is. Nothing else. We'll start from zero, use one picture to hold it all together, and then spend most of the episode walking through real apps you already use, step by step, so you can see who is talking to whom. No new acronyms piled on. By the time you park, the goal is that you could explain an A-P-I to a friend in about thirty seconds, and point to three places it happened on your phone this morning."
+    },
+    {
+      "segment": "Quick callback",
+      "heading": "The request and the response",
+      "body": "One quick rewind first, because you already own the piece we're building on. On Monday you gave a thumbs up to the idea of a client and a server. Your phone, or your browser, is the client. It sends a request across the internet. The server is a computer somewhere else that receives that request, does some work, and sends back a response.\n\nWhen you type a web address, the response is a web page, built for your eyes. Today's whole idea is just one small twist on that. What if the thing asking isn't a person looking at a page, but a program? And what if the answer isn't a page meant for eyes, but plain data meant for that program to use? Hold on to that twist. That's an A-P-I."
+    },
+    {
+      "segment": "The idea",
+      "heading": "The drive-thru window",
+      "body": "A-P-I stands for application programming interface. Ignore the words for a second, and picture a drive-thru, since you're in a car anyway.\n\nWhen you pull up to a drive-thru, you don't walk into the kitchen. You don't touch the fryer, you don't open the freezer, and you don't need to know how many people are working back there. You deal with exactly two things. A menu board that lists what you're allowed to ask for. And a window where you place the order and get a bag handed back.\n\nThe menu is fixed and public. You can order a number three, but you can't order something that isn't on the board. You have to ask in a way the window understands: which item, what size, any changes. And what comes back is predictable. You order a number three, you get a number three, in the same kind of bag every time.\n\nNow here's the part that makes this so powerful. The kitchen can change completely. New ovens, new staff, a rearranged freezer. As long as the menu and the window stay the same, you never notice and you never care.\n\nThat is an A-P-I. It's a window that one program uses to ask another program for something. The A-P-I has a menu, meaning a published list of things you're allowed to ask for. It has rules for how to ask. And it gives back a predictable answer, usually as J-S-O-N, that labeled-data format from Tuesday that you already gave a thumbs up to. The company behind the A-P-I keeps its kitchen private, its databases, its code, its servers, and only exposes the window.\n\nLet's put the three words back now that the picture's in place. Application just means a program. Programming means this window is built for programs and the developers who write them, not for people tapping buttons. And interface means the point where two things meet. So an application programming interface is the meeting point where one program can ask another program to do something. That's all it is.\n\nOne more piece of vocabulary, and it comes straight from the picture. Each item on the menu has its own address, a specific web address you send the request to. That address is called an endpoint. A weather service might have one endpoint for the current weather, another for the ten-day forecast, and another for severe weather alerts. Different items, different windows on the same building.\n\nAnd the menu itself is written down in something called the A-P-I documentation, or just the docs. It's a website the company publishes that lists every endpoint, what you need to send, and what you'll get back. When developers say \"read the docs,\" this is what they mean."
+    },
+    {
+      "segment": "Real life, part one",
+      "heading": "Your weather app",
+      "body": "Let's watch an A-P-I happen. Example one, the weather app on your phone.\n\nYou open the app and see seventy-two degrees and sunny. It feels like the forecast lives inside your phone. It doesn't. Your phone has no thermometer and no satellites. Here's what actually happens in the second after you tap the icon.\n\nStep one. The weather app, the client, figures out where you are, or which city you saved.\n\nStep two. The app sends a request to a weather company's A-P-I, to the endpoint for current conditions. Roughly, the request says: \"Current weather, please, for this latitude and longitude, in Fahrenheit.\" Notice that's exactly like a drive-thru order. Which item, plus the details.\n\nStep three. On the weather company's side, the kitchen does its work. It looks up the latest readings from weather stations and its forecast models, things your phone could never do on its own.\n\nStep four. The A-P-I sends back a response. Not a pretty screen. Just labeled data, in J-S-O-N. Temperature, seventy-two. Condition, sunny. Chance of rain, ten percent. Wind speed, five.\n\nStep five. Your app takes that raw data and draws it nicely, with the sun icon, the big number, and the hourly chart.\n\nHere's the key thing. The A-P-I gave the data. The app gave the look. That split is why there are dozens of different weather apps with totally different designs that are often showing similar numbers underneath. Many of them are calling the same few weather data A-P-Is and just presenting the answer differently. Apple even offers its own weather data to outside developers through an A-P-I called WeatherKit, so a small app maker can show solid forecasts without owning a single weather station.\n\nSo the next time you check the weather, picture it. Your phone pulls up to a window, orders current conditions for your spot, and drives off with a little bag of data."
+    },
+    {
+      "segment": "Real life, part two",
+      "heading": "One Uber ride, many windows",
+      "body": "Example two is bigger. Ordering a ride on an app like Uber. This one shows something important: a single tap in an app can set off many A-P-I calls, some to the company's own servers and some to completely different companies.\n\nStep one. You open the app. It needs to show you a map with your location and the cars nearby. The app on your phone sends a request to the company's own servers, through their own A-P-I, saying \"here's where this rider is, which cars are close?\" The response is a list of nearby cars and their positions, as data. The app draws them as little car icons on the map.\n\nStep two. You type in your destination. As you type, the app is calling a search or places A-P-I to suggest matching addresses. It sends the letters you've typed so far, and gets back a list of likely places. That's why suggestions pop up before you finish typing.\n\nStep three. The app needs a route and a price. It sends your pickup and drop-off to a routing service, which sends back the distance and the estimated time. The pricing system uses that to send back a fare. Again, all data, no pages.\n\nStep four. You tap confirm. Now money has to move. Payment is a specialty, with banks, card networks, fraud checks, and lots of regulation. Many apps don't build that kitchen themselves. They call a payment company's A-P-I. Stripe is a well-known example used by a huge number of businesses. The app sends a request that roughly says, \"Charge this saved card this amount for this order,\" and the payment A-P-I sends back, \"Approved,\" or \"Declined, insufficient funds,\" as data.\n\nStep five. The driver arrives and a text pops up on your phone saying your ride is here. Plenty of apps send those texts by calling a messaging company's A-P-I, like Twilio, with a request that basically says, \"Send this message to this phone number.\"\n\nCount the windows. The company's own A-P-I for cars and trips. Places and routing. Payments. Text messages. One ride, a whole string of drive-thru orders, all done by programs talking to programs in a few seconds, and you never saw any of it.\n\nThis is the real reason A-P-Is matter so much. They let companies snap together specialized services like building blocks, instead of building every kitchen from scratch. When one of those outside companies has an outage, you see it too. If a big payment provider goes down for twenty minutes, checkout buttons on thousands of unrelated websites suddenly fail at the same moment. Same window, lots of customers."
+    },
+    {
+      "segment": "Real life, part three",
+      "heading": "Log in with Google",
+      "body": "Example three, short and familiar. You go to a new website and click \"Continue with Google\" instead of making yet another password.\n\nStep one. The website sends you over to Google's own sign-in page. You log in there, on Google's site, not the new website's.\n\nStep two. Google asks if it's okay to share your name and email with this site. You click allow.\n\nStep three. Behind the scenes, the website's server calls Google's A-P-I and asks, \"Who is this person who just signed in?\" Google's A-P-I answers with data: a name, an email address, and a profile picture link.\n\nStep four. The website uses that data to create your account and log you in.\n\nNotice the pattern again. The website didn't need to build a login system or store your password. It asked Google's A-P-I one question and got a predictable answer. We spent time yesterday on the permission and token part of this, and that will come back later in its own episode. For today, just see the window: one program asking another program for a specific piece of information."
+    },
+    {
+      "segment": "Real life, part four",
+      "heading": "Your Power Automate connectors",
+      "body": "Example four comes from your own internship. When you build a Power Automate flow, you drag in blocks like \"When a new response is submitted\" from Microsoft Forms, or \"Create item\" in a SharePoint list.\n\nThose blocks are called connectors, and here's what they really are. Under the hood, each connector is a wrapper around a service's A-P-I. Each friendly block is a nicely labeled button that, when the flow runs, sends a real A-P-I request to that service.\n\nWalk through a flow. Someone submits a form. The flow grabs their answers. Then the SharePoint \"Create item\" block runs. Behind that block, Power Automate sends a request to SharePoint's A-P-I that says, roughly, \"In this site, in this list, create a new row with these values.\" SharePoint's A-P-I answers with data describing the new item, including its I-D number. Then the next block might use that I-D to send an email with a link.\n\nSo you've been using A-P-Is for months. You just had a friendly visual layer on top. Each block is one drive-thru order. The boxes where you pick the site name and the list name are you filling in the details of the order. And when a block fails with an error message, that's the A-P-I's response telling you the order couldn't be filled.\n\nThis podcast works the same way, by the way. Every morning a script calls a text-to-speech service to turn this text into the audio you're hearing, and calls GitHub's A-P-I to post the finished audio file. Programs talking to programs, no person clicking anything."
+    },
+    {
+      "segment": "Under the hood",
+      "heading": "What's inside one A-P-I call",
+      "body": "Now that you've seen four examples, let's name the parts that show up in every single one. It's the same short checklist each time.\n\nFirst, where you're sending it. That's the endpoint, the specific address for the menu item you want, like the current weather endpoint.\n\nSecond, what you're asking for and the details. The city. The amount to charge. The list name in SharePoint. These are the specifics of the order.\n\nThird, who's asking. Almost every real A-P-I wants to know which program is calling, so it can say yes or no, count how much you've used, and send the bill to the right place. That's where an A-P-I key comes in, which is exactly tomorrow's episode, including how you actually create one.\n\nFourth, the response. It comes back in two parts. A status code, the three-digit number you already know from Monday, where two hundred means it worked and four-oh-four means that thing doesn't exist. And then the data itself, usually J-S-O-N, with labeled values the calling program can pick apart and use.\n\nThat's it. Address, details, who's asking, and an answer with a status code and data. Every A-P-I you'll ever touch, from a weather service to an A-I model, follows that same shape. Even when you use an A-I chatbot inside another app, that app is usually calling the A-I company's A-P-I: it sends your message to an endpoint, includes its key, and gets the model's reply back as data."
+    },
+    {
+      "segment": "Why you care",
+      "heading": "A-P-Is on a Solutions Engineer's calendar",
+      "body": "So where does this show up for you as a Solutions Engineer? Constantly. Here are three moments you're almost guaranteed to have.\n\nMoment one, the integration question. On nearly every sales call, someone asks, \"Does your product work with Salesforce?\" or \"Can it pull data from our HR system?\" When people say integrate, they almost always mean two products talking to each other through A-P-Is. Your job is to answer in plain terms: \"Yes. When a deal closes in Salesforce, our product calls Salesforce's A-P-I to pull the customer details, so your team never has to retype them.\" That one sentence names the trigger, the window, and the benefit.\n\nMoment two, the demo. Solutions Engineers often show a customer an A-P-I live, using a free tool like Postman, which lets you send a request and see the response without writing code. You'd fill in the endpoint, add the key, hit send, and show the customer the J-S-O-N that comes back with their data in it. For a technical buyer, seeing a clean, predictable response is often more convincing than any slide.\n\nMoment three, troubleshooting. A customer says, \"The sync stopped working yesterday.\" Because you know the checklist, you can work through it calmly. Is the request going to the right endpoint? Are the details correct? Is the key still valid? What status code came back? Most broken integrations turn out to be one of those four things.\n\nAnd for interviews, if someone asks you to explain an A-P-I, the drive-thru gets you most of the way there. A published menu, a window, a predictable bag, and a private kitchen."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the whole episode in a few sentences.\n\nAn A-P-I is a window that lets one program ask another program for something. It has a published menu of things you can ask for, called endpoints, written up in the docs. You send a request with the details, and you get back a predictable response: a status code and some data, usually J-S-O-N. The company keeps its kitchen private and only exposes the window.\n\nYou saw it four times today. The weather app ordering current conditions. A ride app calling its own A-P-I plus payment and texting A-P-Is from other companies. Log in with Google answering one question about who you are. And your Power Automate connectors, which are friendly buttons wrapped around real A-P-I calls.\n\nTomorrow we zoom in on one piece of that checklist: who's asking. That's A-P-I keys, what they're for, and step by step how you actually create one and where it goes. That's Mind the Gap for today. Drive safe."
+    }
+  ]
+}
