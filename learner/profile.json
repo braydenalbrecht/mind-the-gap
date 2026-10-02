@@ -18,8 +18,8 @@
     "api-key": {
       "area": "web",
       "level": 1,
-      "last_covered": "2026-09-30",
-      "next_review": "2026-10-02"
+      "last_covered": "2026-10-02",
+      "next_review": "2026-10-03"
     },
     "rest": {
       "area": "web",
@@ -196,7 +196,6 @@
   ],
   "queue_note": "One main topic per episode, in this order unless reactions or notes say otherwise. Reactions and listener notes always jump the queue. Remove a topic when it becomes an episode's main topic.",
   "queue": [
-    "api-key",
     "rest",
     "llm-basics",
     "http-status-codes",
@@ -226,6 +225,7 @@
     "2026-09-30: Learns best through examples. Wants real-life scenarios/applications, no unnecessary fun facts, one topic drilled per episode, callbacks to earlier topics in later episodes.",
     "2026-09-30 (reactions to ep 1-2): APIs and API keys still shaky; wants real-world usage, what applications use them, and how to create a key. REST 'lost me': needs what it is, how it's used, and examples.",
     "Planned order (overrides the usual ❓-first rule because REST depends on APIs): Thu Oct 1 = APIs re-taught from scratch as the only topic, built on real apps (weather app, Uber using maps and payment APIs, Log in with Google, Power Automate connectors). Fri Oct 2 = API keys: what they're for, and step by step how you actually create one and where it goes. Sat Oct 3 recap = APIs and API keys with new examples. Mon Oct 5 = REST from scratch, slowly, as 'the most common way APIs are organized', with examples. Oauth and webhooks (crammed into ep 3) get their own full episodes later.",
-    "2026-10-01: Applied reactions for ep 1-2. Ep 4 re-taught APIs from scratch (drive-thru analogy; weather app, Uber, Log in with Google, Power Automate connectors). Next: Fri API keys (how to create one, where it goes), Sat recap APIs + API keys, Mon REST from scratch."
+    "2026-10-01: Applied reactions for ep 1-2. Ep 4 re-taught APIs from scratch (drive-thru analogy; weather app, Uber, Log in with Google, Power Automate connectors). Next: Fri API keys (how to create one, where it goes), Sat recap APIs + API keys, Mon REST from scratch.",
+    "2026-10-02: No new reactions since ep 1-2. Ep 5 covered API keys as the only topic (fuel-card analogy; creating keys at a weather API, Stripe, Google Maps; where keys go; this podcast's GitHub token). Next: Sat recap APIs + API keys with new examples, Mon REST from scratch."
   ]
 }

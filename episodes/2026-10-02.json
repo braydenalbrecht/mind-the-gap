@@ -1,0 +1,141 @@
+{
+  "number": 5,
+  "date": "2026-10-02",
+  "title": "The Fuel Card",
+  "summary": "API keys, as the only topic: the fuel-card picture (identifies an account not a person, every use counted and billed, can be limited, cancel it if lost), then step-by-step key creation for a weather API, Stripe (sandbox vs live, publishable vs secret vs restricted keys), and Google Maps (restricting a public key), where each key actually goes, this podcast's own GitHub token, and this week's study of 543,699 still-live leaked credentials.",
+  "minutes": 16,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "api-key",
+      "name": "API keys (deep dive)",
+      "blurb": "The secret string that tells an API which program is calling, and how to create one and where it goes"
+    },
+    {
+      "id": "api",
+      "name": "APIs (callback)",
+      "blurb": "The drive-thru window the key gets you served at"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Stripe Docs: API keys",
+      "url": "https://docs.stripe.com/keys"
+    },
+    {
+      "title": "Google Maps Platform security guidance",
+      "url": "https://developers.google.com/maps/api-security-best-practices"
+    },
+    {
+      "title": "Truffle Security: GitHub Repos Exposed 543,699 Credentials. Nobody Revoked Them. (Sept 29, 2026)",
+      "url": "https://trufflesecurity.com/blog/github-repos-exposed-543699-credentials-nobody-revoked-them"
+    },
+    {
+      "title": "SecurityWeek: 500,000 Active Credentials Left Exposed on GitHub",
+      "url": "https://securityweek.com/500000-active-credentials-left-exposed-on-github"
+    },
+    {
+      "title": "GitHub Docs: Automatic token authentication (GITHUB_TOKEN)",
+      "url": "https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "rotate-key",
+      "term": "Rotating a key",
+      "definition": "Cancelling an API key and issuing a replacement. Done when a key leaks, when someone with access leaves, or on a regular schedule."
+    },
+    {
+      "id": "request-header",
+      "term": "Header (request header)",
+      "definition": "A labeled note attached to the outside of an API request, separate from the main data. API keys usually travel here."
+    },
+    {
+      "id": "sandbox",
+      "term": "Sandbox (test mode)",
+      "definition": "A practice copy of an account where actions are pretend, like Stripe payments with fake cards. It has its own keys, separate from live keys."
+    },
+    {
+      "id": "publishable-key",
+      "term": "Publishable key",
+      "definition": "A low-power key (like Stripe's) that is safe to put in a website or app, because it can't charge cards or read account data."
+    },
+    {
+      "id": "secret-key",
+      "term": "Secret key",
+      "definition": "A high-power API key that can act on the whole account. It must stay on the server and never appear in code others can see."
+    },
+    {
+      "id": "restricted-key",
+      "term": "Restricted key",
+      "definition": "An API key limited to only the actions you choose, so a leak does less damage. Stripe recommends these for most new projects."
+    },
+    {
+      "id": "key-restriction",
+      "term": "Key restrictions",
+      "definition": "Rules that limit where a key works (only from your website, server or app) and what it can call (only certain APIs). Used to protect keys that must be public, like Google Maps keys."
+    },
+    {
+      "id": "secrets-vault",
+      "term": "Secrets vault",
+      "definition": "A locked storage service for passwords and API keys, provided by a hosting platform. Programs fetch keys from it instead of having them written in code."
+    },
+    {
+      "id": "environment-variable",
+      "term": "Environment variable",
+      "definition": "A named setting stored on the server, outside the code, that a program reads when it runs. A common fallback place to keep API keys."
+    },
+    {
+      "id": "leaked-credential",
+      "term": "Leaked credential",
+      "definition": "A key, token or password accidentally exposed, often by committing it to public code. Treat it as burned: rotate it, don't just delete the file."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Quick callback",
+      "heading": "The window, and who's at it",
+      "body": "Morning, and welcome to Mind the Gap. This is episode five, and it's Friday.\n\nYesterday was all about A-P-Is, the drive-thru window. One program pulls up to another program's window, orders something off a published menu, and drives away with a predictable bag of data. The weather app ordering current conditions. The ride app calling a payment company to charge your card. Your Power Automate blocks quietly placing orders with SharePoint.\n\nAt the end, we built a little checklist for every single A-P-I call. Where you're sending it, the endpoint. What you want, the details. Who's asking. And the answer that comes back, a status code plus some data.\n\nToday we zoom all the way in on one line of that checklist: who's asking. That's the A-P-I key. Same as yesterday, there's only one topic. We'll get a clear picture of what a key is and what it isn't, then walk through actually creating real ones, step by step, at three different companies, and see exactly where each key goes once you have it. By the end, you should be able to sit down tonight and get your own key in about five minutes."
+    },
+    {
+      "segment": "The idea",
+      "heading": "A fuel card for your program",
+      "body": "Let's clear up the biggest misunderstanding first. An A-P-I key is not a profile. It doesn't hold your name, your address, or your credit card number. If you looked at one, you'd see a long, random-looking string of letters and numbers, something like forty characters of gibberish. There's no personal information hidden inside it. It's more like a ticket number than a file.\n\nSo what does it do? Picture a delivery company with a fleet of vans. The company doesn't hand each driver cash for gas. Instead, every van gets a fuel card. Notice a few things about that card.\n\nFirst, it belongs to the company account, not to a person. Whoever is driving van twelve today uses van twelve's card. The gas station doesn't care who the driver is. It cares which account to bill.\n\nSecond, every swipe is recorded. The company can look at a report and see that van twelve bought gas forty times this month, which is how they get billed, and how they notice when something looks off.\n\nThird, the card can have limits. Maybe it only works for fuel, not snacks, and only up to a certain amount per day.\n\nAnd fourth, if a card gets lost or stolen, anyone who finds it can use it. There's no PIN, no photo check. So the company doesn't argue about it. They cancel that card and issue a new one.\n\nThat is an A-P-I key, almost exactly. It's a secret string that identifies a program, or the account behind it, every time that program calls an A-P-I. The company running the A-P-I uses it to do three jobs. One, decide whether to let the request in at all. Two, count your usage, so they can bill you and enforce limits, like a free plan that allows a thousand calls a day. And three, decide what you're allowed to do, if the key has restrictions on it.\n\nAnd because whoever holds the key can use it, you treat it like a password. You don't post it, you don't email it around, and if it leaks, you cancel it and make a new one. That's called rotating the key.\n\nOne quick status code callback, since you already know these. If a program calls an A-P-I with no key, or a wrong one, the answer that usually comes back is a four-oh-one, unauthorized. Meaning: I don't know who you are. That's the gas station saying, sorry, this card doesn't scan."
+    },
+    {
+      "segment": "Real life, part one",
+      "heading": "Getting a key for a weather app",
+      "body": "Let's actually make one. Example one picks up right where yesterday left off. Say you're building a small weather app, and you want to use a weather data company's A-P-I. The exact buttons vary a little by company, but nearly every A-P-I follows this same path, so learn it once and you'll recognize it everywhere.\n\nStep one, sign up. You go to the weather company's developer site and create an account with your email. Usually you pick a plan, and most of these have a free tier for small projects.\n\nStep two, find the keys page. Once you're logged in, you land on a dashboard. Somewhere in the menu there's a section called A-P-I keys, or credentials, or sometimes it's under a developer tab. Many companies create your first key for you automatically.\n\nStep three, generate a key. If there isn't one yet, you click a button like create key or generate new key. You give it a name, something like weather app testing, so later you can tell your keys apart. Then the long random string appears on screen.\n\nStep four, copy it and save it somewhere safe right away. Some companies only show the full key once. If you click away without copying it, it's gone, and you'll have to make another.\n\nStep five, put it in your request. Remember, the request goes to the current conditions endpoint with details like your location. Now you add the key. There are two common places it rides along. Most often it goes in a header. A header is a labeled note attached to the outside of a request, like writing something on the outside of an envelope instead of inside the letter. The A-P-I docs tell you the exact label to use. Some older or simpler A-P-Is instead ask you to tack the key onto the end of the web address itself.\n\nStep six, the weather company checks it. Their server reads the key, looks up whose account it belongs to, checks you haven't gone over your daily limit, adds one to your usage count, and then sends back the weather data. If you go over the free limit, you start getting errors back until tomorrow, or until you upgrade. That's the fuel card hitting its daily cap.\n\nThat's the whole loop. Sign up, find the keys page, generate, copy, put it in the request, and the A-P-I uses it to say yes, count, and bill."
+    },
+    {
+      "segment": "Real life, part two",
+      "heading": "Stripe: two kinds of keys",
+      "body": "Example two is Stripe, the payment company we met yesterday in the ride app. Stripe is worth knowing well because so many businesses use it, and because it shows an important idea: not every key is equally secret.\n\nWhen you sign up for Stripe, it sets you up with a sandbox. A sandbox is a practice version of your account. Payments in it are pretend, so you can test with fake card numbers and nothing real gets charged. The sandbox has its own keys, separate from the real ones, which Stripe calls live mode keys. You can tell them apart at a glance, because test keys have the word test in them, and live keys have the word live.\n\nNow open the A-P-I keys page in the Stripe dashboard. You'll see more than one kind of key.\n\nThere's a publishable key. Its job is small. It lets the checkout form in a customer's browser hand card details to Stripe safely. It can't charge anyone or read your account data, and Stripe says outright that it's safe to put in your website's code.\n\nThen there's the secret key. This one can do almost anything on your account: charge cards, issue refunds, read customer records. That key must never leave your server.\n\nStripe also offers restricted keys, where you choose exactly what the key can do. Maybe it can create charges but not issue refunds. Stripe actually recommends restricted keys for most new projects, because if one leaks, the damage is limited to what you allowed. Think of it as a fuel card that only works for gas.\n\nHere's how creating one goes, and notice how careful it is. You click create key. Stripe sends a verification code to your email or phone, and you enter it, so someone who just walked up to your laptop can't do this. You give the key a name and click create. Stripe shows you the key and tells you to save it, because for keys you make yourself in live mode, you can't see it again later. There's even a box to add a note about where you stored it, so future you, or a teammate, knows where to look.\n\nSo where does the secret key actually go? Not in your code. Stripe's own advice is to keep it in a secrets vault, which is a locked storage service your hosting platform provides, built just for passwords and keys. If you don't have one, the fallback is an environment variable. That's a setting on the server, outside your code, that your program reads when it starts up. Your code says something like, use whatever key is stored under the name Stripe key, without the actual key ever being written in the file.\n\nNow walk through a real purchase. A customer types their card into the checkout form. The publishable key, which is fine to be public, gets the card details over to Stripe. Then your server, reading the secret key from its locked setting, calls Stripe's A-P-I and says, charge this amount. Stripe checks the secret key, knows it's your account, charges the card, and answers approved. Two keys, two very different jobs."
+    },
+    {
+      "segment": "Real life, part three",
+      "heading": "A Google Maps key, with a lock on it",
+      "body": "Example three is a key that has to live somewhere public. Say a coffee shop chain wants a store locator map on its website. That map comes from Google Maps, through an A-P-I, and it needs a key.\n\nHere's the catch. The map loads in the customer's browser. That means the key has to be sent along with the page, so anyone who knows how can find it. You can't hide it like the Stripe secret key. So instead, you lock it down.\n\nThe steps go like this. You sign in to the Google Cloud console, which is Google's dashboard for developers, and open the credentials page for Google Maps Platform. You click to create an A-P-I key, and a new key appears. Then comes the part that matters. You restrict it, in two ways.\n\nThe first is called an application restriction. You tell Google, only accept this key when the request comes from my website. Google lets you list specific website addresses, or specific server addresses, or a specific Android or iPhone app. Now if someone copies the key and tries to use it on their own site, Google refuses.\n\nThe second is an A-P-I restriction. You tell Google, this key can only be used for the maps services I picked, and nothing else in my Google account. Google's own security guidance says to always do both.\n\nThen you put the key into the website's map code, and every time a customer loads the store locator, their browser sends the key along. Google checks it came from the coffee shop's website, checks it's being used for maps, counts the map load toward the coffee shop's bill, and draws the map.\n\nThe lesson is simple. Some keys you protect by hiding them. Others you protect by limiting where and how they work. The best setups do both whenever they can."
+    },
+    {
+      "segment": "Real life, part four",
+      "heading": "This podcast's own key",
+      "body": "One more example, and it's short, because it's the show you're listening to. Every morning, a scheduled job writes a new episode file and pushes it to a code repository on GitHub. That push kicks off an automated pipeline, using a GitHub feature called Actions, which turns the text into audio and posts the finished file.\n\nTo post that file, the pipeline has to call GitHub's own A-P-I, and GitHub needs to know who's asking. So the pipeline uses a token, which is the same idea as an A-P-I key. Here's the neat part. It's never written in the code. It lives in GitHub's secrets storage, which is GitHub's version of a secrets vault. The pipeline's instructions just say, at this step, take the secret with this name and hand it to the program as an environment variable. The program reads it, includes it in its request headers, and GitHub's A-P-I says, yes, I know you, go ahead.\n\nGitHub even creates that particular token fresh for each job, and it expires as soon as the job finishes. So even if it leaked somehow, it would be useless a few minutes later. That's the same rotation idea, built right in.\n\nYour Power Automate flows work the same way, just more quietly. When you set up a connection to a service that uses keys, you paste the key into the connection once, Power Automate stores it, and every flow that uses that connection sends it along without you ever seeing it again."
+    },
+    {
+      "segment": "In the news",
+      "heading": "Half a million keys nobody turned off",
+      "body": "This week gave us a clean example of why rotating keys matters. On Tuesday, a security research company called Truffle Security published a study. They scanned over two hundred million public code repositories on GitHub, looking for keys and passwords that developers had accidentally saved right in their code. Then they checked which ones still worked. When they tested over the summer, more than five hundred forty thousand were still live.\n\nThe biggest groups were Google Cloud credentials, database connection details, and Google A-P-I keys. There were also thousands of live Stripe keys. And here's the surprising part. More than a third of the working ones had been committed after GitHub started blocking secrets in new code by default in early twenty twenty-four. Detection catches a lot, but it can't un-publish a key that's already out there.\n\nTheir main advice lines up exactly with the fuel card. Once a key lands in code that other people can see, treat it as burned. Don't just delete the file. Cancel the key and make a new one."
+    },
+    {
+      "segment": "Why you care",
+      "heading": "Keys on a Solutions Engineer's day",
+      "body": "So where does this hit you as a Solutions Engineer? Three places, almost every week.\n\nFirst, onboarding. A new customer signs the contract, and their developer's first question is, how do we get started? You'll walk them through exactly what we did today: go to the dashboard, open the keys page, start with a sandbox key, make a restricted key with only the permissions they need, and store it in a vault, not in the code. Being able to say those steps calmly, in order, makes a customer trust you fast.\n\nSecond, troubleshooting. A customer says, our integration suddenly stopped working this morning. One of your first questions is, what status code are you getting back? If it's four-oh-one, think key. Did someone rotate it and forget to update the server? Are they using a test key against live data, or the other way around? Did a teammate who left the company have the only copy? A lot of urgent tickets come down to the wrong key in the wrong place.\n\nThird, security reviews. Bigger customers will ask how keys work in your product. Can keys be restricted? Can they be rotated without downtime? Can admins see usage per key? Stripe, for example, can let an old key keep working for up to a week after you rotate it, so you can switch servers over gradually. Knowing features like that, and explaining why they matter, is part of how deals get approved.\n\nAnd in interviews, if someone asks what an A-P-I key is, the fuel card gets you there in thirty seconds. It identifies the account, not a person. Every use is counted and billed. It can be limited. And if it's lost, you cancel it and get a new one."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's today in a few sentences.\n\nAn A-P-I key is a secret string that tells an A-P-I which program or account is calling. It doesn't hold personal information. The A-P-I uses it to let you in, count and bill your usage, and enforce limits. Getting one is nearly always the same: sign up, open the keys page in the dashboard, generate, copy it once, and put it in your request, usually in a header. Keep secret keys on the server in a vault or an environment variable, never in your code. Restrict any key you can, and if one leaks, rotate it.\n\nTomorrow is Saturday, so it's the weekend recap. We'll take A-P-Is and A-P-I keys together, with brand new examples, so the two lock into one picture before Monday, when we take on REST, the most common way A-P-Is are organized. That's Mind the Gap for today. Drive safe."
+    }
+  ]
+}
