@@ -1,0 +1,106 @@
+{
+  "number": 6,
+  "date": "2026-10-03",
+  "title": "Four Orders at the Window",
+  "summary": "Weekend recap of APIs and API keys with four new examples run through one checklist (where, what, who's asking, what came back): a dentist's text reminders through Twilio, a store chatbot calling Claude and billed by the token, a Slack bot that needs a token and an invite to the channel, and a Monday morning 401 caused by a rotated key nobody updated.",
+  "minutes": 13,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "api",
+      "name": "APIs (recap)",
+      "blurb": "The window where one program orders from another, traced through texts, chatbots and Slack"
+    },
+    {
+      "id": "api-key",
+      "name": "API keys (recap)",
+      "blurb": "The fuel card that says who's asking, where it lives, and what breaks when it's wrong"
+    },
+    {
+      "id": "http-status-codes",
+      "name": "401 vs 403 (callback)",
+      "blurb": "Wrong or missing card versus right card, wrong aisle"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Twilio Docs: Twilio API requests (authentication and API keys)",
+      "url": "https://www.twilio.com/docs/usage/requests-to-twilio"
+    },
+    {
+      "title": "Twilio Docs: SMS developer quickstart",
+      "url": "https://www.twilio.com/docs/messaging/quickstart"
+    },
+    {
+      "title": "Claude Platform Docs: Get your Claude API key",
+      "url": "https://platform.claude.com/docs/en/get-api-key"
+    },
+    {
+      "title": "Claude Platform Docs: API overview",
+      "url": "https://platform.claude.com/docs/en/api/overview"
+    },
+    {
+      "title": "Slack Docs: Creating an app from app settings",
+      "url": "https://docs.slack.dev/app-management/quickstart-app-settings/"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "bot-token",
+      "term": "Bot token",
+      "definition": "A secret string a service like Slack gives an app when it's installed into one workspace. It works like an API key, but only in that workspace and only with the permissions (scopes) the app was granted."
+    },
+    {
+      "id": "scope",
+      "term": "Scope (permission)",
+      "definition": "One specific thing an app or key is allowed to do, like 'write messages' in Slack. Apps ask for scopes when they're installed."
+    },
+    {
+      "id": "service-account-key",
+      "term": "Service account key",
+      "definition": "An API key that belongs to a workload (a production app, a scheduled job) rather than to one employee, so it keeps working when people change jobs."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Weekend recap",
+      "heading": "Two ideas, one picture",
+      "body": "Morning, and welcome to Mind the Gap. This is episode six, and it's Saturday, so it's the weekend recap.\n\nThis week we slowed way down and spent two whole days on one pair of ideas. Thursday was A-P-Is, the drive-thru window. Friday was A-P-I keys, the fuel card. You told me earlier in the week that both of these felt shaky, so today is about locking them together into one picture you can actually use.\n\nHere's the plan. A quick refresher on both pictures, side by side. Then four brand new examples, none of which we've used before. A dentist's office texting you a reminder. A chatbot on a store's website. A Slack bot that announces new orders. And a Monday morning where everything breaks because of one wrong key. In every example, we'll trace exactly who is talking to whom, what gets ordered, and where the key sits. Then we'll talk about why this is the bread and butter of a Solutions Engineer's week."
+    },
+    {
+      "segment": "The refresher",
+      "heading": "The window and the card",
+      "body": "First, the window. An A-P-I, application programming interface, is a window that lets one program ask another program for something. The company running the window publishes a menu, which is the documentation. Each item on the menu is an endpoint, a specific address you send a specific kind of request to. You pull up, place your order with the details, and you get back a predictable bag: a status code that says how it went, plus some data, usually in J-S-O-N. The kitchen, meaning the company's own code and databases, stays private. You only ever see the window.\n\nSecond, the card. An A-P-I key is a long random string that tells the window which account is ordering. It's not a profile, and there's no personal information inside it. Like a fleet fuel card, it belongs to an account, every use is counted and billed, it can be limited to certain things, and if it's lost, you cancel it and get a new one. That's called rotating the key.\n\nNow put them together, and every A-P-I call fits one short checklist. Where am I sending it, the endpoint. What do I want, the details. Who's asking, the key, usually tucked into a header on the outside of the request. And what came back, the status code plus the data. Keep that four line checklist in your head. We're going to run all four examples through it."
+    },
+    {
+      "segment": "Example one",
+      "heading": "The dentist's text reminder",
+      "body": "It's Tuesday afternoon and your phone buzzes. A text says, reminder, you have a cleaning tomorrow at nine. Reply C to confirm. Let's trace what actually happened.\n\nYour dentist's office uses scheduling software. That software knows your appointment and your phone number, but it doesn't own any phone lines, and it has no deals with Verizon or A-T-and-T. Building that would be a huge project. So instead, the software company signed up with a texting provider. A popular one is Twilio, whose whole business is basically one big window for sending texts and making calls.\n\nWhen the software company set this up, a developer created a Twilio account, opened the console, which is Twilio's dashboard, and created an A-P-I key. Twilio's own docs recommend using these keys for applications, and even offer restricted keys that can only do certain things. The developer stored that key on the software company's server, as an environment variable, not inside the code.\n\nNow run the checklist. Every afternoon, a scheduled job on that server looks at tomorrow's appointments. For each one, it sends a request to Twilio's messages endpoint. That's where. The details are three things: the number to send to, which is yours, the number to send from, which is a phone number the dental software rents from Twilio, and the text itself. That's what. The key rides along in the request. That's who's asking. Twilio checks the key, sees which account it belongs to, and answers within a moment with a status code saying it accepted the message, plus a little bag of data with an I-D for that message and a status like queued. Then Twilio does the hard part, handing the text off to the phone carriers so it lands on your phone.\n\nAnd the fuel card part matters here too. Twilio charges per message, and the key is how it knows whose bill to put that text on. If a hundred patients get reminders today, that's a hundred swipes on the software company's account.\n\nOne small thing to notice. When you reply C, that reply has to get back to the dental software somehow. That's the reverse direction, Twilio calling the software instead of the software calling Twilio. That's a webhook, and it'll get its own full episode later. For today, just notice that the outgoing reminder is a plain A-P-I call with a key."
+    },
+    {
+      "segment": "Example two",
+      "heading": "The chatbot on a store's website",
+      "body": "You're on an outdoor gear store's website, and a little chat bubble in the corner says, ask me anything. You type, can I return boots I've already worn outside. A few seconds later you get a friendly answer about the store's thirty day return policy. Behind that bubble, there's a good chance an A-I model from another company is doing the writing. Let's say the store uses Claude, from Anthropic. Here's the trace.\n\nSetup first. A developer at the store goes to Anthropic's developer console, opens settings, then the A-P-I keys page, and clicks create key. They give it a name, like store chatbot, and can set an expiration date. Anthropic shows the full key exactly once. If you don't copy it right then, it's gone, and you make a new one. The docs also offer service account keys, which belong to a workload like a production app instead of to one employee, so the chatbot doesn't break when that developer changes jobs. The key goes on the store's server, in an environment variable.\n\nNow the important part. Your message does not go straight from your browser to Anthropic. If it did, the key would have to live in the web page, and anyone could open the page source and copy it. Instead, your message goes to the store's own server first. The store's server is the one that pulls up to Anthropic's window.\n\nRun the checklist. Where: Anthropic's messages endpoint. What: which model to use, some instructions from the store, like you are a helpful assistant for an outdoor gear shop, here is our return policy, plus your question. Who's asking: the store's key, sent in a header the docs name specifically for the key. What comes back: a success code, and a J-S-O-N bag containing the written answer, plus a count of how many tokens went in and how many came out. The store's server pulls out the answer and shows it in your chat bubble.\n\nRemember tokens from Tuesday? You gave those a thumbs up. This is where they turn into money. A-I providers like Anthropic price their A-P-Is by tokens, input and output. So the key isn't just letting the store in, it's the fuel card that every token gets billed to. That's why a company running a busy chatbot watches its key's usage dashboard closely, and often sets spending limits on the account."
+    },
+    {
+      "segment": "Example three",
+      "heading": "A Slack bot that announces orders",
+      "body": "Now picture that same store's team chat. Every time someone places an order over five hundred dollars, a message pops into a Slack channel called big orders, so the sales team can send a thank you note. Who's posting that?\n\nThis time the window belongs to Slack. A developer goes to Slack's site for building apps, creates a new app, and names it something like Order Bot. Then they decide what the bot is allowed to do. Slack calls these permissions scopes, and for this bot, the one that matters is permission to write messages. Then they click install to workspace. You approve it, or a workspace admin does, and once it's approved, Slack hands the developer a bot token. A token here is the same idea as a key: a secret string that says who's asking. The difference is just that this one was issued by installing the app into one specific workspace, and it only works there, with only the permissions it was given.\n\nRun the checklist. When a big order comes in, the store's server sends a request to Slack's post message method. Where: that post message endpoint. What: the channel, big orders, and the text, like new order for six hundred twelve dollars from Denver. Who's asking: the bot token in the header. What comes back: a response saying whether it worked, and the message appears in the channel.\n\nHere's a real gotcha Slack's docs call out. The bot has to be invited into the channel before it can post there. If nobody invited Order Bot to big orders, the request comes back with an error saying the bot is not in the channel. The token is fine, the request is fine, but the bot isn't in the room. That's a very common question in support tickets, and now you'd know the answer in about ten seconds.\n\nNotice how the same pattern keeps repeating. Different company, different window, different menu, but always the same four lines. Where, what, who's asking, and what came back."
+    },
+    {
+      "segment": "Example four",
+      "heading": "The Monday the chatbot broke",
+      "body": "Last example, and this one is about what happens when the who's asking part goes wrong, because that's where you'll spend real time on the job.\n\nGo back to the store's chatbot. On Friday afternoon, an engineer realizes the chatbot's key was accidentally pasted into a shared document that a contractor could see. Doing the right thing, they go into Anthropic's console and delete that key, then create a new one. That's rotating the key. But it's late on a Friday, and they forget the last step: updating the environment variable on the server with the new key.\n\nMonday morning, customers start seeing the chat bubble say, sorry, something went wrong. The store calls for help. Here's how you'd troubleshoot it with the checklist.\n\nWhere: is the server still sending to the right endpoint? Yes, nothing changed there. What: are the details still valid? Yes, same model, same instructions. What came back: you look at the server's logs and see the status code four-oh-one. You know this one from last Monday's episode. Four-oh-one means unauthorized, the server doesn't know who you are. And that points straight at line three of the checklist, who's asking. The server is still swiping the old, cancelled card. Fix: put the new key into the environment variable, restart the app, and the bubble starts answering again.\n\nQuick contrast so the codes stay sharp. If the logs said four-oh-three instead, forbidden, that would mean the key is valid, the window knows exactly who you are, but that key isn't allowed to do this particular thing. That's what you'd see with a restricted key that wasn't given the right permission. Four-oh-one, wrong or missing card. Four-oh-three, right card, wrong aisle."
+    },
+    {
+      "segment": "Why you care",
+      "heading": "This is the job",
+      "body": "Here's where this shows up for you as a Solutions Engineer. A huge chunk of the role is connecting your company's product to a customer's other systems, and almost every one of those connections is an A-P-I call with a key.\n\nIn a demo, you might live connect your product to a customer's Slack, the exact flow from example three: create the app, approve it, grab the token, send a test message. Doing that smoothly in front of a customer builds a lot of trust.\n\nOn a customer call, you'll hear, can your product send texts, or can it plug into our A-I assistant. Now you know the honest answer usually sounds like, yes, we call a texting provider's A-P-I, or yes, you give us a key and we call the model on your behalf. And you'll know to ask the follow up question, where will that key be stored, and who can see it.\n\nAnd in troubleshooting, the Monday morning story is not made up drama. Expired, rotated, or mis-pasted keys are one of the most common reasons an integration suddenly stops working. If you look at the status code first and go straight to who's asking when you see four-oh-one, you'll solve in five minutes what takes other people an afternoon.\n\nEven your internship fits this. Every Power Automate connector you sign into is doing this exact dance underneath, with a key or token stored for you."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the whole week in a few sentences.\n\nAn A-P-I is a window where one program orders something from another program off a published menu. An A-P-I key is the fuel card that says which account is ordering, so the window can let you in, count your usage, and bill you. Every call is the same checklist: where, what, who's asking, and what came back. You saw it today with a dentist's texts through Twilio, a store chatbot calling Claude and paying by the token, a Slack bot that needs to be invited into the room, and a Monday morning four-oh-one caused by a rotated key nobody updated. And the key always lives on the server, never in the web page.\n\nOn Monday we build one level up. Now that you know what a single A-P-I call looks like, we'll look at REST, the most common way A-P-Is organize their menu, so that the endpoints and the request types start to feel predictable. Slowly, with lots of examples. Have a great weekend, and drive safe."
+    }
+  ]
+}
