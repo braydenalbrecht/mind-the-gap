@@ -51,11 +51,6 @@
       "definition": "A secret string a service like Slack gives an app when it's installed into one workspace. It works like an API key, but only in that workspace and only with the permissions (scopes) the app was granted."
     },
     {
-      "id": "scope",
-      "term": "Scope (permission)",
-      "definition": "One specific thing an app or key is allowed to do, like 'write messages' in Slack. Apps ask for scopes when they're installed."
-    },
-    {
       "id": "service-account-key",
       "term": "Service account key",
       "definition": "An API key that belongs to a workload (a production app, a scheduled job) rather than to one employee, so it keeps working when people change jobs."
