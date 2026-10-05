@@ -1,0 +1,120 @@
+{
+  "number": 7,
+  "date": "2026-10-05",
+  "title": "Things With Addresses",
+  "summary": "REST re-taught from scratch as the only topic: things with addresses and four standard moves (GET, POST, PATCH or PUT, DELETE), using the contacts app as the picture. Walked through a yoga studio adding a member at Stripe, a help desk filing a bug on GitHub, a Power Automate flow reading a SharePoint list, and a 404 caused by mixing test and live keys.",
+  "minutes": 17,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "rest",
+      "name": "REST APIs",
+      "blurb": "Things with addresses and four standard moves: GET looks, POST adds, PATCH or PUT edits, DELETE removes"
+    },
+    {
+      "id": "api",
+      "name": "APIs (callback)",
+      "blurb": "The drive-thru window whose menu REST organizes"
+    },
+    {
+      "id": "api-key",
+      "name": "API keys (callback)",
+      "blurb": "The fuel card every stateless request carries, and the test-versus-live mix-up"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Stripe API Reference: Customers",
+      "url": "https://docs.stripe.com/api/customers"
+    },
+    {
+      "title": "Stripe API Reference: Update a customer",
+      "url": "https://docs.stripe.com/api/customers/update"
+    },
+    {
+      "title": "GitHub Docs: REST API endpoints for issues",
+      "url": "https://docs.github.com/en/rest/issues/issues"
+    },
+    {
+      "title": "GitHub Docs: Getting started with the REST API",
+      "url": "https://docs.github.com/rest/guides/getting-started-with-the-rest-api"
+    },
+    {
+      "title": "Microsoft Learn: Working with lists and list items with REST (SharePoint)",
+      "url": "https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest"
+    },
+    {
+      "title": "Microsoft Learn: Flow, get SharePoint list item through REST API",
+      "url": "https://learn.microsoft.com/en-us/archive/technet-wiki/52887.flow-get-sharepoint-list-item-through-rest-api"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "http-method",
+      "term": "HTTP method",
+      "definition": "The verb at the start of every web request that says what you want done: GET (look), POST (add), PUT or PATCH (edit), DELETE (remove)."
+    },
+    {
+      "id": "crud",
+      "term": "CRUD",
+      "definition": "Create, read, update, delete: the four basic things you can do to data. In a REST API they map to POST, GET, PATCH or PUT, and DELETE."
+    },
+    {
+      "id": "path",
+      "term": "Path",
+      "definition": "The part of a web address after the domain that names the thing you want, like /customers or /customers/42. In REST, a path for a group of things plus an ID points to one specific thing."
+    },
+    {
+      "id": "request-body",
+      "term": "Request body",
+      "definition": "The data a request carries, usually JSON, when it adds or edits something, like a new customer's name and email in a POST."
+    },
+    {
+      "id": "resource-id",
+      "term": "Resource ID",
+      "definition": "The unique identifier a service gives each thing it stores (for example Stripe customer IDs start with cus_). Added to the end of a path, it becomes that thing's own address."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Callback",
+      "heading": "The window and the card, one more time",
+      "body": "Morning, and welcome to Mind the Gap. This is episode seven, and it's Monday.\n\nToday there is exactly one topic, and it's the one that lost you last week: REST. Last Tuesday it got about two minutes at the end of a crowded episode, squeezed between JSON and large language models, and that was not enough. So today we start from zero, go slowly, and spend most of the drive on real examples.\n\nFirst, a one minute reminder of the two things REST sits on top of, because you now have both of them.\n\nAn A-P-I, application programming interface, is a drive-thru window for programs. One program pulls up and orders something from another program, off a published menu. Each item on that menu has its own web address, called an endpoint. And what comes back is usually J-S-O-N, those labeled values in curly braces.\n\nAn A-P-I key is the fuel card. It rides along with every single order, tucked into a part of the request called the header, and it tells the window which account is ordering, so they can let you in, count your usage, and bill you. Wrong or missing card, you get a four-oh-one.\n\nHold onto both of those. Here's the one new idea for today: REST is simply the most common way that menu gets organized."
+    },
+    {
+      "segment": "The idea",
+      "heading": "Things with addresses, and four standard moves",
+      "body": "Let's set the jargon aside completely for a minute and think about the contacts app on your phone.\n\nYour contacts app is full of things. Each thing is one person. And every person has their own page. Tap on your mom, you get her page. Tap on your roommate, you get his page. Now think about everything you can actually do in that app. You can look at a contact. You can add a new contact. You can edit a contact, like changing a phone number. And you can delete a contact. That's basically it. Look, add, edit, delete.\n\nNow picture your calendar app. Different things, events instead of people, but the moves are the same. Look at an event. Add an event. Edit an event. Delete an event. Your notes app, same four moves. Your photo album, same four moves.\n\nThat's the whole idea behind REST. An A-P-I designed in the REST style is organized around things, and every kind of thing gets handled with the same small set of standard moves.\n\nLet's map that onto the drive-thru. A company with a REST A-P-I looks at its own business and asks, what are the things here? For an online store, the things are customers, orders, and products. Each kind of thing gets its own address on the menu. So there's an address for all the customers, which you'd say out loud as slash customers. And each individual customer gets their own address underneath it, using their ID number. Customer forty-two lives at slash customers slash forty-two. Just like each contact has their own page.\n\nThen for the moves. The web already has a set of standard verbs built in, called H-T-T-P methods. When your phone sends a request to a server, the request always says which method it's using. REST just uses those methods as the moves. There are four you need.\n\nGET means look. Give me this thing.\n\nPOST means add. Here's a new one, please create it.\n\nPATCH, or sometimes PUT, means edit. Change this thing.\n\nAnd DELETE means, well, delete.\n\nSo the address says which thing, and the method says what you want to do with it. GET slash customers slash forty-two means show me customer forty-two. DELETE slash customers slash forty-two means remove customer forty-two. Same address, different move. POST slash customers, along with the details of a new person, means add a new customer. When you add or edit something, the details ride along in the request as J-S-O-N. That part of the request is called the body.\n\nPeople sometimes call those four moves CRUD, which stands for create, read, update, delete. It's a slightly silly word, but you'll hear it constantly, and it just means those four moves.\n\nHere's why this matters so much. REST is not a product, and it's not a piece of software you install. It's a set of habits that most companies agreed to follow. And because they follow the same habits, once you've used one REST A-P-I, you can almost guess how the next one works. If a company has slash invoices, you already suspect that GET slash invoices lists them, GET slash invoices slash some I-D gets one, and POST slash invoices makes a new one. You'd still check the docs, but you'd rarely be surprised.\n\nOne last piece, and it ties right back to the fuel card. REST A-P-Is are what's called stateless. That just means the window doesn't remember you between orders. Every request has to carry everything it needs, including your A-P-I key, every single time. There's no logging in once and staying logged in. That's exactly why the key rides in the header of every request.\n\nSo that's the idea. Things with addresses. Four standard moves. Every request stands on its own. Now let's watch it happen."
+    },
+    {
+      "segment": "Example one",
+      "heading": "A yoga studio signs up a new member with Stripe",
+      "body": "Picture a small yoga studio with a website. They take payments through Stripe, the payments company. Somebody named Maya signs up for a monthly membership on the studio's site. Let's trace what the studio's website says to Stripe, step by step.\n\nStep one. Maya types her name and email into the signup form and hits submit. The studio's server, not Maya's browser, now talks to Stripe. It sends a POST request to Stripe's address for customers, slash customers. POST, because it's adding something new. In the body, as J-S-O-N, it sends Maya's name and email. And in the header, it sends the studio's secret key, the fuel card that says, this order is from the yoga studio's account.\n\nStep two. Stripe's window checks the key, creates a brand new customer record, and sends back a response. The status code is in the two hundreds, so it worked. And the body is J-S-O-N describing the customer it just made, including the most important piece: a new ID that Stripe made up. Stripe customer IDs start with the letters C-U-S and an underscore, followed by a jumble of characters. The studio's server saves that ID in its own database next to Maya's name. That ID is Maya's address at Stripe from now on.\n\nStep three. A week later, the studio owner wants to see whether Maya's card is still on file. The studio's software sends a GET request to slash customers slash, and then Maya's ID. GET, because it's just looking. Same fuel card in the header. Stripe sends back Maya's details as J-S-O-N. Nothing changes on Stripe's side. Looking never changes anything.\n\nStep four. Maya changes her email address. The studio sends an edit to Maya's address at Stripe, with the new email in the body. Here's a small real-world wrinkle worth knowing: Stripe uses POST for edits instead of PATCH. Most companies use PATCH or PUT for edits, but Stripe made a different choice years ago, and it's written right there in their docs. This is exactly why I said REST is a set of habits, not hard laws. The pattern is almost always the same, and the docs tell you where a company bends it.\n\nStep five. Maya moves away and asks the studio to remove her. The studio sends a DELETE request to slash customers slash Maya's ID. Stripe deletes the customer and sends back a little bit of J-S-O-N confirming it.\n\nNotice what happened across all five steps. Only one address for the whole group, slash customers, and one address for Maya specifically. Four kinds of moves. The fuel card on every single request. That's REST in its plainest form."
+    },
+    {
+      "segment": "Example two",
+      "heading": "A bug report that files itself on GitHub",
+      "body": "Second example, and this one connects to something you've already used: GitHub.\n\nImagine a software company with a support team. A customer calls in and says, every time I export a report, the app crashes. The support agent opens their help desk tool, clicks a button that says send to engineering, and a few seconds later, a new issue shows up on the engineering team's GitHub project with the customer's description in it. Who talked to whom?\n\nThe help desk tool is the one ordering. GitHub is the window. And GitHub has a big REST A-P-I.\n\nThink about what the things are on GitHub. There are repositories, which are projects. Inside a repository, there are issues, which are bug reports and to-do items. So the address for the issues in one project looks like this, read out loud: slash repos, slash the owner's name, slash the project's name, slash issues. You can almost hear the structure. Go to this owner, then this project, then its issues. Things nested inside things, just like folders on your laptop.\n\nWhen the agent clicks send to engineering, the help desk tool sends a POST to that issues address. POST, because it's creating a new issue. In the body, as J-S-O-N, there's a title, like report export crashes, and a description with the customer's details. In the header, there's a GitHub token, which is GitHub's version of the fuel card.\n\nGitHub creates the issue and answers with status code two-oh-one. That means created. It's the more specific cousin of two hundred, and you'll see it a lot right after a POST. The response body includes the new issue's number, say number eighty-seven.\n\nNow the issue has its own address: the same path as before, plus slash eighty-seven. Later, when an engineer fixes the bug, the help desk tool might check on it with a GET to that address, see that it's been closed, and automatically email the customer to say it's fixed. Or if the help desk tool is the one closing it, it sends a PATCH to issue eighty-seven, with a body that says the state is now closed. PATCH, because it's editing one field on something that already exists.\n\nAnd here's a fun connection that's actually useful. This podcast uses that same A-P-I every morning. When the episode file lands on GitHub, an automated job turns it into audio and then creates something called a release, a labeled package where the M-P-three gets stored. Creating that release is a POST to the releases address for this project, with the project's token in the header. Same shape as the bug report. Different thing, same moves."
+    },
+    {
+      "segment": "Example three",
+      "heading": "Your Power Automate flow, with the hood up",
+      "body": "Third example, from your internship.\n\nSay you build a Power Automate flow that runs every morning, looks at a SharePoint list called Tasks, finds anything overdue, and sends a reminder. In the flow designer, you drag in a SharePoint action called get items, pick the site, pick the Tasks list, and you're done. It feels like clicking boxes, not like calling an A-P-I. But under the hood, it is a REST call.\n\nHere's what's actually going on. SharePoint has its own REST A-P-I. A SharePoint site lives at a web address, and if you add slash underscore A-P-I to the end of it, you've walked up to SharePoint's drive-thru window. From there the path goes, web, then lists, then the list you want by its title, then items. Things nested inside things again. The site has lists, a list has items.\n\nSo when your get items action runs, the connector sends a GET to that items address, using the sign-in you set up for the connection as its fuel card. SharePoint answers with J-S-O-N, a list of every task, each with its title, due date and status. Power Automate turns that J-S-O-N into the friendly dynamic content boxes you click on in the next step.\n\nIf your flow then uses the create item action to log each reminder in another list, that's a POST to that other list's items address, with the new row's details in the body. Update item is an edit to one item's address. Delete item is a DELETE. The four moves, again, wearing friendly Power Automate costumes.\n\nAnd here's the step-by-step for seeing it directly. Power Automate has an action called send an H-T-T-P request to SharePoint. When you add it, it asks you for exactly the pieces we've been talking about. Which site. Which method, from a dropdown, GET, POST, PATCH, DELETE. The address, starting with that underscore A-P-I part. Any headers. And a body, if you're adding or editing. People reach for it when the built-in actions can't do something, like changing who has permission to see one item. If you ever open that action, you'll recognize every box.\n\nThat's a good thing to tuck away: almost every connector you've clicked on in Power Automate is a friendly wrapper around somebody's REST A-P-I."
+    },
+    {
+      "segment": "Example four",
+      "heading": "The customer who swears the customer exists",
+      "body": "Last example, and this one is a troubleshooting call, because that's where REST knowledge really pays off.\n\nYou're a Solutions Engineer at a company with a REST A-P-I. A customer's developer emails you, annoyed. They say, your A-P-I is broken. We created a customer, we got an ID back, and now every time we look it up, we get a four-oh-four, not found. The customer is definitely there.\n\nBecause you know REST, you walk through it like a checklist, the same way we did on Saturday. Where was it sent, what was asked for, who's asking, and what came back.\n\nWhere. You ask for the exact address they're calling. First thing you check is the path. Did they write slash customer, singular, instead of slash customers, plural? That alone gives a four-oh-four, because there's simply no such address on the menu. In this case, the path is fine.\n\nWhat. They're doing a GET. Right move for looking something up.\n\nWho's asking. Here's the catch. When they created the customer, their code was using the test key, the sandbox fuel card from Friday's episode. When they look it up, their code is using the live key. Many companies, Stripe included, keep test data and live data completely separate. A customer made with the test key simply doesn't exist in the live world. So from the live window's point of view, that ID really is not found.\n\nWhat came back. A four-oh-four, which, read the right way, was telling the truth the whole time.\n\nYou explain it in two sentences, they switch keys, and it works. Notice how REST made this quick. Because every request stands on its own and carries its own key, there are only a few places to look: the address, the method, the key, and the body. You don't have to guess what the server remembers about them, because it doesn't remember anything."
+    },
+    {
+      "segment": "Why it matters",
+      "heading": "Where REST shows up in your week",
+      "body": "So why does this matter to you specifically?\n\nAs a Solutions Engineer, one of the most common questions you'll get on a customer call is, can your product connect to our system? Whatever else is said, the real question underneath is usually, do both sides have REST A-P-Is, and can one call the other with the right key. If you can open a company's A-P-I docs and quickly say, yes, there's a slash contacts address, we can GET their contacts and POST new ones into our system, you're answering that question in minutes instead of promising to get back to them.\n\nIn a demo, REST gives you a clean way to explain what's happening behind the buttons. Something like: when you click save here, our app sends a POST to the customer's system with the new record, and gets back an ID. Non-technical people follow that easily, especially if you use the contacts app comparison.\n\nIn troubleshooting, it gives you a checklist. Address, method, key, body, status code. Most integration problems live in one of those five places.\n\nAnd in interviews, describing REST as things with addresses, four standard moves, and stateless requests that each carry their own key is a clear, confident answer. Being able to add a real detail, like the fact that Stripe uses POST for edits, or that GitHub answers a successful create with a two-oh-one, shows you've actually looked at real A-P-Is, not just memorized a definition."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the whole thing in a few sentences.\n\nREST is the most common way an A-P-I's menu is organized. Every kind of thing, like customers, issues, or list items, gets an address, and each single thing gets its own address underneath, usually with its ID on the end. Then four standard moves do everything: GET looks, POST adds, PATCH or PUT edits, and DELETE removes. Each request stands on its own and carries its own key in the header.\n\nYou saw it today in a yoga studio adding a member at Stripe, a help desk filing a bug on GitHub, your own Power Automate flow reading a SharePoint list, and a four-oh-four that turned out to be a mixed-up test key.\n\nWhen you're parked, open the text version and mark how REST landed, and leave a note if something's still fuzzy.\n\nTomorrow, we go back to large language models, which you marked as shaky. We'll rebuild what's really happening when a chatbot answers you, slowly, with lots of examples. Drive safe."
+    }
+  ]
+}
