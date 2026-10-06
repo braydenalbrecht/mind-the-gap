@@ -138,13 +138,13 @@
     "llm-basics": {
       "area": "ai",
       "level": 0,
-      "last_covered": "2026-09-29",
-      "next_review": "2026-10-04"
+      "last_covered": "2026-10-06",
+      "next_review": "2026-10-09"
     },
     "tokens-context-window": {
       "area": "ai",
       "level": 2,
-      "last_covered": "2026-09-29",
+      "last_covered": "2026-10-06",
       "next_review": "2026-10-15"
     },
     "embeddings": {
@@ -196,8 +196,6 @@
   ],
   "queue_note": "One main topic per episode, in this order unless reactions or notes say otherwise. Reactions and listener notes always jump the queue. Remove a topic when it becomes an episode's main topic.",
   "queue": [
-    "llm-basics",
-    "http-status-codes",
     "webhook",
     "oauth",
     "iaas-paas-saas",
@@ -227,6 +225,7 @@
     "2026-10-01: Applied reactions for ep 1-2. Ep 4 re-taught APIs from scratch (drive-thru analogy; weather app, Uber, Log in with Google, Power Automate connectors). Next: Fri API keys (how to create one, where it goes), Sat recap APIs + API keys, Mon REST from scratch.",
     "2026-10-02: No new reactions since ep 1-2. Ep 5 covered API keys as the only topic (fuel-card analogy; creating keys at a weather API, Stripe, Google Maps; where keys go; this podcast's GitHub token). Next: Sat recap APIs + API keys with new examples, Mon REST from scratch.",
     "2026-10-03: No new reactions since ep 1-2. Ep 6 Saturday recap of APIs + API keys with new examples (Twilio appointment texts, store chatbot on the Claude API billed by tokens, Slack bot token + invite to channel, 401 after a rotated key; 401 vs 403 callback). Next: Mon REST from scratch, with API/API-key callbacks.",
-    "2026-10-05: No new reactions since ep 1-2. Ep 7 re-taught REST from scratch as the only topic (contacts-app picture: things with addresses + four moves; Stripe customers, GitHub issues and releases, Power Automate SharePoint get items / send an HTTP request, 404 from test vs live key), with API and API-key callbacks. Next: Tue LLM basics re-taught (shaky, overdue)."
+    "2026-10-05: No new reactions since ep 1-2. Ep 7 re-taught REST from scratch as the only topic (contacts-app picture: things with addresses + four moves; Stripe customers, GitHub issues and releases, Power Automate SharePoint get items / send an HTTP request, 404 from test vs live key), with API and API-key callbacks. Next: Tue LLM basics re-taught (shaky, overdue).",
+    "2026-10-06: No new reactions since ep 1-2. Ep 8 re-taught LLM basics from scratch as the only topic (closed-library analogy; chatbot drafting an email with system prompt + streaming, Air Canada chatbot's invented bereavement policy, Avianca lawyers' six fake cases, grounding a support bot in help articles; this podcast as grounding example), with a tokens/context-window callback. Removed http-status-codes from queue (already 👍, level 2, covered eps 1 and 6). Next: Wed webhooks as a full episode."
   ]
 }

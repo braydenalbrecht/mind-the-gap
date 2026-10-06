@@ -1,0 +1,98 @@
+{
+  "number": 8,
+  "date": "2026-10-06",
+  "title": "The Library Is Closed",
+  "summary": "Large language models re-taught from scratch as the only topic: a friend who read an enormous library, then lost access to it, writing one fitting token at a time. Walked through a chatbot drafting an email (system prompt, streaming, the stop token), Air Canada's chatbot inventing a refund policy, lawyers fined over six made-up court cases, and grounding a support assistant in real help articles.",
+  "minutes": 14,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "llm-basics",
+      "name": "Large language models",
+      "blurb": "Next-token prediction from a closed library: why it writes one piece at a time, hallucinates, and needs the right page on the desk"
+    },
+    {
+      "id": "tokens-context-window",
+      "name": "Tokens and the context window (callback)",
+      "blurb": "The unit the model writes in, and the desk where everything it knows in the moment has to sit"
+    }
+  ],
+  "sources": [
+    {
+      "title": "MobileSyrup: Air Canada has to pay for chatbot mistake (Moffatt v. Air Canada, B.C. Civil Resolution Tribunal)",
+      "url": "https://mobilesyrup.com/2024/02/16/air-canada-has-to-pay-for-chatbot-mistake/"
+    },
+    {
+      "title": "ABA Journal: Lawyers who 'doubled down' and defended ChatGPT's fake cases must pay $5K, judge says",
+      "url": "https://abajournal.com/web/article/lawyers-who-doubled-down-and-defended-chatgpts-fake-cases-must-pay-5k-judge-says"
+    },
+    {
+      "title": "Claude Docs: Streaming messages",
+      "url": "https://docs.claude.com/en/api/messages-streaming"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "next-token-prediction",
+      "term": "Next-token prediction",
+      "definition": "The one thing a large language model does: look at all the text so far and guess the most fitting next token, add it, and repeat until it predicts the answer is done."
+    },
+    {
+      "id": "system-prompt",
+      "term": "System prompt",
+      "definition": "Hidden instructions placed at the top of the model's context before your message, written by the app or company: who the assistant is, today's date, rules to follow."
+    },
+    {
+      "id": "streaming",
+      "term": "Streaming",
+      "definition": "Sending a model's answer back piece by piece as each token is generated, which is why chatbot replies appear in bursts instead of all at once."
+    },
+    {
+      "id": "grounding",
+      "term": "Grounding",
+      "definition": "Tying a model's answer to real source material you hand it in the context window (like the actual policy page), and telling it to stick to that material or say it doesn't know."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Callback",
+      "heading": "The meter you already know",
+      "body": "Morning, and welcome to Mind the Gap. This is episode eight, and it's Tuesday.\n\nOne topic today, and it's one you marked as shaky a week ago: large language models, the engine inside ChatGPT, Claude and Gemini. Back in episode two, it got squeezed into the same episode as J-S-O-N and REST, and that was too much at once. So today we rebuild it from the ground up, slowly, and spend most of the drive watching it work in real situations.\n\nFirst, a quick reminder of something you already have down, because it's the doorway into today. Tokens. A token is a chunk of text, usually a short word or a piece of a longer word, and about three quarters of a word on average. A model reads tokens and writes tokens, and companies charge for both. And the context window is the model's working desk: the most tokens it can look at in one go, including your question, the conversation so far, and its own answer.\n\nYou told me tokens and the context window clicked. Good, because today you'll see exactly why the model works in tokens, and why everything it knows in the moment has to be sitting on that desk."
+    },
+    {
+      "segment": "The idea",
+      "heading": "The friend who read the whole library",
+      "body": "Here's the picture I want you to hold for the whole episode.\n\nImagine a friend who, years ago, read an enormous library. Millions of books, websites, manuals, forum posts, and a lot of computer code. They didn't memorize it page by page. Instead, all that reading left them with an incredible feel for how language goes. How an email to a professor usually sounds. What usually comes after the word dear. How a refund policy is normally worded. What a legal case citation looks like.\n\nThen the library closed. This friend can't go back and check anything. There's no bookshelf behind them, no search bar. When you ask them something, they answer purely from that feel, from memory.\n\nAnd there's one more quirk. This friend speaks one word at a time, and before every single word, they ask themselves just one question: given everything said so far, what's the most fitting next word? They say that word, then ask the question again, including the word they just said. Over and over, until it feels like the answer is complete.\n\nThat's a large language model. L-L-M. Large, because it's enormous. Language, because it works on text. Model, because under the hood it's a giant math formula, billions of numbers called parameters, that takes text in and produces a guess about what comes next. The proper name for that one question is next-token prediction. It's the only thing the model ever does. Everything else, the essays, the code, the friendly tone, is built out of that one move repeated hundreds of times.\n\nSo how did the friend get that feel for language? Training, in two stages. In the first stage, the model is shown a huge amount of text with the next piece hidden, guesses it, gets told the real answer, and its numbers get nudged a tiny bit. Do that trillions of times, and it gets very good at guessing. In the second stage, people train it further on examples of good conversations, so instead of rambling on like a random web page, it answers like a helpful assistant.\n\nNow here are the two things this picture explains, and they're the whole reason this topic matters.\n\nOne. The model is not looking anything up. When it tells you a fact, it isn't fetching it from a database. It's producing the words that most fit. Most of the time, the words that fit are also true, because the library was full of true things. But sometimes the words that fit are not true. The model will produce a confident, perfectly formatted answer that is simply made up. That's called a hallucination. The model isn't lying. It has no idea it's wrong. It's just guessing the next fitting word, like always.\n\nTwo. The library closed on a date, called the training cutoff. The model doesn't know anything that happened after it, unless someone puts that information on the desk, inside the context window, as part of the conversation.\n\nKeep both of those in mind. Not a lookup, and the library is closed. Now let's watch it work."
+    },
+    {
+      "segment": "Example one",
+      "heading": "Asking a chatbot to write an email",
+      "body": "First example, step by step, something you've probably done. You open the Claude app on your phone and type: write a short, polite email to my professor asking for a two-day extension on my networking project.\n\nStep one. Your phone app is the client. It doesn't contain the model. It sends your message over the internet to the company's servers. That's the A-P-I idea again: one program ordering from another.\n\nStep two. The servers don't just pass along your one sentence. They build a bigger package of text. At the top, there's a set of hidden instructions the company wrote, called a system prompt. It says things like who the assistant is, what today's date is, and how it should behave. Below that comes your conversation so far, and then your new message. All of that gets chopped into tokens and placed on the desk.\n\nStep three. The model makes its first prediction. Given everything on the desk, what's the most fitting first token? Something like Subject. That token gets added to the text. Then the model looks at everything again, including Subject, and predicts the next token, maybe a colon. Then Extension. Then request. One token at a time.\n\nStep four. As each token is predicted, the server sends it straight back to your phone. That's why you see the answer appear in little bursts instead of all at once. That's not an animation to look fancy. It's called streaming, and it's the model literally writing the email piece by piece while you watch.\n\nStep five. Eventually the model predicts a special token that basically means I'm done. The writing stops. The servers count how many tokens went in and how many came out, and that's what gets billed, either to your subscription or, if a business is using the A-P-I, to their account through their A-P-I key.\n\nNotice what didn't happen. At no point did the model search for example emails or check your syllabus. It doesn't know your professor's name unless you typed it. Everything it used was either in that old feel for language, or sitting on the desk. That's why a good email comes out when you give it details, like the project name and why you need the time, and a generic one comes out when you don't."
+    },
+    {
+      "segment": "Example two",
+      "heading": "The airline chatbot that invented a policy",
+      "body": "Second example, a real one, and it shows hallucination costing a company money.\n\nIn November twenty twenty-two, a man named Jake Moffatt needed to fly after his grandmother died. He went to Air Canada's website and asked the airline's chatbot about bereavement fares, the discounted fares some airlines offer when you travel because of a death in the family.\n\nThe chatbot told him he could book a regular ticket now and apply for the bereavement discount afterward, within about three months. So he did exactly that. He paid full price, then applied for the partial refund. Air Canada said no, because its real bereavement policy didn't allow that.\n\nHe took it to a small claims tribunal in British Columbia. Air Canada's argument was, essentially, we aren't responsible for what the chatbot said. In February twenty twenty-four, the tribunal rejected that. It said the airline is responsible for all the information on its own website, whether it comes from a regular page or a chatbot, and ordered Air Canada to pay him back the difference, a bit over eight hundred Canadian dollars including fees.\n\nNow run it through our picture. A traveler asks about bereavement refunds. What words fit best after that question? An answer that sounds like an airline policy. Clear, confident, specific, with a number of days in it. Plenty of airline policy text in that old library sounds exactly like that. So the model produced a fitting answer. It just wasn't Air Canada's actual answer, because the real policy page wasn't sitting on the desk, or the model didn't stick to it.\n\nThe lesson isn't that chatbots are useless. It's that a chatbot answering customer questions has to be handed the real policy, every time, and kept to it. Otherwise it fills the gap with something that sounds right."
+    },
+    {
+      "segment": "Example three",
+      "heading": "The lawyer who thought it was searching",
+      "body": "Third example. Also real, and it's the clearest picture of the library-is-closed problem.\n\nIn twenty twenty-three, two New York lawyers were working on a lawsuit against the airline Avianca. One of them used ChatGPT to help with legal research and asked it for court cases that supported their argument. It gave him cases, with names, courts and dates, all formatted exactly like real legal citations. They went into a filing with the federal court.\n\nThe problem: six of those cases did not exist. The other side's lawyers couldn't find them. The judge couldn't find them. In June of that year, the judge fined the two lawyers and their firm five thousand dollars, largely because they kept standing behind the cases after they were questioned.\n\nThe detail that matters most for you is what the lawyer said in court. He explained that he thought ChatGPT was pulling these cases from somewhere, like a search engine with a database behind it. He didn't think it could just make one up.\n\nThat's exactly the misunderstanding today's picture fixes. The friend who read the library has seen thousands of case citations. They know the shape perfectly: a name versus a name, a volume number, a court, a year. Ask for a case that supports your argument, and the most fitting next tokens are a citation with that shape. Whether a case with that name actually exists is a separate question the model has no built-in way to check. The library is closed.\n\nSo the habit is simple. Use the model to draft, explain and summarize. But any specific fact that matters, a case, a statistic, a policy, a price, gets checked against the real source before you rely on it."
+    },
+    {
+      "segment": "Example four",
+      "heading": "Putting the right page on the desk",
+      "body": "Last example, and it's the fix, because this is the part you'll actually build and sell.\n\nPicture a software company whose customers keep asking the same support questions. They want an A-I assistant on their help page. Here's how a careful team sets it up, step by step.\n\nStep one. When a customer types a question, say, can I get a refund if I cancel my annual plan in the second month, the system does not send that question to the model alone.\n\nStep two. First, it searches the company's own help articles and finds the two or three most relevant ones, like the actual refund policy page.\n\nStep three. It builds the package for the model: a system prompt that says, answer only using the articles below, and if they don't cover the question, say you don't know and offer a human. Then the articles themselves. Then the customer's question. All of that goes on the desk, inside the context window.\n\nStep four. The model does the exact same thing it always does, predicting one fitting token after another. But now the most fitting words are the ones sitting right there on the desk. The answer quotes the real policy instead of inventing a plausible one.\n\nThis approach has a name, grounding, meaning you tie the model's answer to real source material you hand it. There's a more specific technique for it that we'll give its own full episode later, called R-A-G. For today, just remember the principle: you can't reopen the library, but you can put the right page on the desk.\n\nAnd this podcast does a version of it every morning. The script you're hearing is drafted by a large language model. Its library closed months ago, so on its own it wouldn't know what day it is or what happened in the news this week. So the scheduled job tells it today's date, gives it your learner profile and your reactions, and has it search the web and check facts against real sources before anything goes in the script. That's why each episode has a sources list. Same principle: right page, on the desk."
+    },
+    {
+      "segment": "Why it matters",
+      "heading": "Where this shows up in your job",
+      "body": "So why does this matter for you as a Solutions Engineer?\n\nAlmost every software product you could work for is adding A-I features, and customers will ask about them on calls. The question you'll hear most often, in some form, is: can we trust what it says? With today's picture, you can give a clear, honest answer in plain language. Something like: the model writes by predicting the most fitting next words. It doesn't look things up on its own. So we give it your actual documents every time, tell it to stick to them, and tell it to say I don't know when they don't cover the question.\n\nIn a demo, when the assistant gets something wrong, and someday it will, you won't panic. You'll know where to look. Was the right information on the desk? Was the instruction to stick to it clear? Was the question about something after the training cutoff? That's a troubleshooting checklist, just like address, method, key and body was for REST.\n\nWhen a customer's team wants to use A-I to answer their own customers, you can point to the Air Canada case as the reason grounding isn't optional. And when someone asks why answers stream in word by word, or why long conversations cost more, you can explain both with one idea: one token at a time, with everything on the desk resent each turn.\n\nAnd in interviews, saying a large language model predicts the next token, learned patterns from huge amounts of text, doesn't look anything up on its own, and should be grounded in real data for business use, is a sharp, correct answer that a lot of candidates fumble."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the whole thing in a few sentences.\n\nA large language model is like a friend who read an enormous library, and then the library closed. It writes by asking one question over and over: what's the most fitting next token? It isn't looking anything up, so it can produce confident answers that are wrong, which we call hallucinations, and it knows nothing after its training cutoff unless you put it on the desk.\n\nYou saw it today writing an email one token at a time, inventing an airline policy, inventing court cases, and getting it right once the real help article was put on the desk.\n\nWhen you're parked, open the text version and mark how this landed. A note helps a lot if something is still fuzzy.\n\nTomorrow, webhooks get their own full episode: how one app taps another on the shoulder the moment something happens, instead of being asked over and over. Drive safe."
+    }
+  ]
+}
