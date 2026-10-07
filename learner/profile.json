@@ -12,7 +12,7 @@
     "api": {
       "area": "web",
       "level": 1,
-      "last_covered": "2026-10-05",
+      "last_covered": "2026-10-07",
       "next_review": "2026-10-08"
     },
     "api-key": {
@@ -36,7 +36,7 @@
     "http-status-codes": {
       "area": "web",
       "level": 2,
-      "last_covered": "2026-10-03",
+      "last_covered": "2026-10-07",
       "next_review": "2026-10-15"
     },
     "oauth": {
@@ -48,8 +48,8 @@
     "webhook": {
       "area": "web",
       "level": 0,
-      "last_covered": "2026-09-30",
-      "next_review": null
+      "last_covered": "2026-10-07",
+      "next_review": "2026-10-10"
     },
     "iaas-paas-saas": {
       "area": "cloud",
@@ -196,7 +196,6 @@
   ],
   "queue_note": "One main topic per episode, in this order unless reactions or notes say otherwise. Reactions and listener notes always jump the queue. Remove a topic when it becomes an episode's main topic.",
   "queue": [
-    "webhook",
     "oauth",
     "iaas-paas-saas",
     "sql-vs-nosql",
@@ -226,6 +225,7 @@
     "2026-10-02: No new reactions since ep 1-2. Ep 5 covered API keys as the only topic (fuel-card analogy; creating keys at a weather API, Stripe, Google Maps; where keys go; this podcast's GitHub token). Next: Sat recap APIs + API keys with new examples, Mon REST from scratch.",
     "2026-10-03: No new reactions since ep 1-2. Ep 6 Saturday recap of APIs + API keys with new examples (Twilio appointment texts, store chatbot on the Claude API billed by tokens, Slack bot token + invite to channel, 401 after a rotated key; 401 vs 403 callback). Next: Mon REST from scratch, with API/API-key callbacks.",
     "2026-10-05: No new reactions since ep 1-2. Ep 7 re-taught REST from scratch as the only topic (contacts-app picture: things with addresses + four moves; Stripe customers, GitHub issues and releases, Power Automate SharePoint get items / send an HTTP request, 404 from test vs live key), with API and API-key callbacks. Next: Tue LLM basics re-taught (shaky, overdue).",
-    "2026-10-06: No new reactions since ep 1-2. Ep 8 re-taught LLM basics from scratch as the only topic (closed-library analogy; chatbot drafting an email with system prompt + streaming, Air Canada chatbot's invented bereavement policy, Avianca lawyers' six fake cases, grounding a support bot in help articles; this podcast as grounding example), with a tokens/context-window callback. Removed http-status-codes from queue (already 👍, level 2, covered eps 1 and 6). Next: Wed webhooks as a full episode."
+    "2026-10-06: No new reactions since ep 1-2. Ep 8 re-taught LLM basics from scratch as the only topic (closed-library analogy; chatbot drafting an email with system prompt + streaming, Air Canada chatbot's invented bereavement policy, Avianca lawyers' six fake cases, grounding a support bot in help articles; this podcast as grounding example), with a tokens/context-window callback. Removed http-status-codes from queue (already 👍, level 2, covered eps 1 and 6). Next: Wed webhooks as a full episode.",
+    "2026-10-07: No new reactions since ep 1-2. Ep 9 covered webhooks as the only topic (leave-your-number-with-the-host analogy; Stripe checkout webhook set up in Workbench with signing secret and up-to-3-day retries, GitHub push webhook with recent deliveries and manual redeliver, Slack incoming webhook chained from the Stripe one plus Power Automate's HTTP request trigger, troubleshooting 'orders stopped syncing' via delivery log and status codes), with API and status-code callbacks. Next: Thu OAuth as a full episode."
   ]
 }

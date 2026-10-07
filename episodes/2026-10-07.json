@@ -1,0 +1,117 @@
+{
+  "number": 9,
+  "date": "2026-10-07",
+  "title": "Leave Your Number",
+  "summary": "Webhooks as the only topic: instead of walking up to the host stand every two minutes (polling), you leave your number and get a text when the table is ready. Walked through a Stripe payment marking an order paid, a GitHub push starting a build, a Slack incoming webhook alert (plus Power Automate's HTTP request trigger), and a customer call where the delivery log explains why orders stopped syncing.",
+  "minutes": 16,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "webhook",
+      "name": "Webhooks",
+      "blurb": "Leave your number with the host: an automatic message sent to your endpoint the moment something happens, signed, answered with a two-hundred, retried if missed"
+    },
+    {
+      "id": "api",
+      "name": "APIs (callback)",
+      "blurb": "The drive-thru window you call; webhooks are the same kind of call running in reverse, and the API is how you fetch the full details or catch up"
+    },
+    {
+      "id": "http-status-codes",
+      "name": "HTTP status codes (callback)",
+      "blurb": "Reading four-oh-four, four-oh-one, four-oh-three, five hundreds and timeouts in a webhook delivery log"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Stripe Docs: Manage event destinations (Workbench webhooks, retries for up to 3 days in live mode)",
+      "url": "https://docs.stripe.com/workbench/webhooks"
+    },
+    {
+      "title": "GitHub Docs: Best practices for using webhooks",
+      "url": "https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks"
+    },
+    {
+      "title": "Slack Developer Docs: Sending messages using incoming webhooks",
+      "url": "https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks/"
+    },
+    {
+      "title": "Microsoft Learn: When an HTTP request is received built-in connector",
+      "url": "https://learn.microsoft.com/en-us/training/modules/http-connectors/4-http-request"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "webhook-endpoint",
+      "term": "Webhook endpoint",
+      "definition": "The web address (URL) on your system, reachable from the internet, where another system delivers its webhook messages. Your phone number left with the restaurant host."
+    },
+    {
+      "id": "event-type",
+      "term": "Event type",
+      "definition": "A specific kind of happening you subscribe to, like a completed checkout or a code push, so you only get webhooks for the things you care about."
+    },
+    {
+      "id": "payload",
+      "term": "Payload",
+      "definition": "The bundle of details carried inside a webhook or API request, usually JSON: what happened, when, and to which thing, often with an ID to look up more."
+    },
+    {
+      "id": "webhook-retry",
+      "term": "Webhook retry",
+      "definition": "When the sender doesn't get a quick 200 'got it' back, it tries delivering the same message again later, often waiting longer each time. Rules differ by provider (Stripe retries for up to three days in live mode; GitHub expects you to redeliver)."
+    },
+    {
+      "id": "delivery-log",
+      "term": "Delivery log",
+      "definition": "The provider's list of webhook messages it sent, whether each was delivered or failed, and the status code your endpoint answered. The first place to look when an integration stops syncing; often has a redeliver button."
+    },
+    {
+      "id": "incoming-webhook",
+      "term": "Incoming webhook (Slack)",
+      "definition": "A secret Slack URL tied to one channel; anything that POSTs a small JSON message to it makes that message appear in the channel."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Callback",
+      "heading": "Where we left the drive-thru",
+      "body": "Morning, and welcome to Mind the Gap. This is episode nine, and it's Wednesday.\n\nOne topic today: webhooks. Back in episode three they got a few minutes at the end of a crowded episode about OAuth. Today they get the whole drive, built out of real examples.\n\nQuick reminder first, because webhooks only make sense next to the thing you already know. An A-P-I, application programming interface, is a drive-thru window for programs. Your program pulls up, places an order in the format the menu expects, and gets something back. And REST, from Monday, is the most common way those windows are organized: things with addresses, like customers or orders, and four moves you can make on them, which are get, create, update and delete.\n\nNotice who starts the conversation in every one of those. You do. Your program drives up to the window and asks. The other system just sits there and answers. That works great when you want something right now. It falls apart when what you really want is to find out the moment something changes over there. That's the gap webhooks fill."
+    },
+    {
+      "segment": "The idea",
+      "heading": "Leave your number with the host",
+      "body": "Here's the picture to carry all morning.\n\nYou walk into a busy restaurant on a Friday night. The host says the wait is forty minutes. You have two options.\n\nOption one: you stand near the host stand and every two minutes you walk up and ask, is my table ready? Is my table ready? Most of the time the answer is no. You're wasting your time and theirs. And if the table opens up thirty seconds after you asked, you won't know until your next trip to the stand. That's called polling. Your program calls the other system's A-P-I on a timer and asks, anything new? It works, but almost every call comes back empty, and you're always a little late.\n\nOption two: you give the host your phone number and say, text me when it's ready. Then you go sit at the bar. The moment the table opens, your phone buzzes. You did one small thing up front, and after that, the restaurant does the reaching out. That's a webhook.\n\nSo in plain English, a webhook is an automatic message one system sends to another the moment something happens. It's the A-P-I call running in reverse. Instead of you calling them, they call you.\n\nLet's map the restaurant onto the real pieces, because these words will show up in every dashboard you ever touch.\n\nYour phone number is the webhook endpoint. That's a web address, a U-R-L, that belongs to your system and is reachable from the internet. It's where the messages get delivered.\n\nTelling the host \"text me when my table is ready, not when the kitchen runs out of salmon\" is choosing your event types. You subscribe only to the happenings you care about, like a payment succeeded, or an order was created.\n\nThe text itself is the payload. That's the bundle of details that arrives, written in J-S-O-N, the labeled-box format you already know. It says what happened, when, and to which thing, usually with an I-D you can use to look up more.\n\nAnd here's one detail people forget. When the text arrives, you reply with a quick thumbs up. In webhook terms, your endpoint answers with a status code of two-hundred, meaning got it. If the restaurant never sees that thumbs up, it assumes you missed it and texts again later. That's a retry.\n\nOne last piece. Anyone could text you pretending to be the restaurant. So the restaurant and you agree on a secret word ahead of time, and every real text is signed with it. Your endpoint checks the signature before it believes anything. That's the webhook signature from episode three, and it matters a lot, because your endpoint is a public address that anyone on the internet can send things to.\n\nEndpoint, event types, payload, the two-hundred reply, retries, and the signature. That's the whole machine. Now let's watch it run."
+    },
+    {
+      "segment": "Example one",
+      "heading": "The online store and the payment",
+      "body": "Start with the example you'll see most often as a Solutions Engineer: payments.\n\nPicture a small online store that sells coffee beans. They use Stripe to take payments. A customer clicks checkout, gets sent to a Stripe checkout page, types in a card number, and clicks pay.\n\nNow, the store's website needs to know that the payment actually went through, so it can mark the order as paid, email a receipt, and tell the warehouse to ship. The tempting shortcut is to trust the moment the customer lands back on the \"thank you\" page. But the customer might close the tab before that page loads, or their wifi might drop. The money still moved, and the store would never find out. So instead, Stripe tells the store directly, with a webhook.\n\nHere's how a developer at that store sets it up. They log in to the Stripe dashboard, open the area called Workbench, and go to the Webhooks tab. They click Create new destination. Stripe asks which events they want, and they pick the one for a completed checkout. They choose Webhook as the type, and paste in their endpoint U-R-L, an address on their own website set aside just for Stripe's messages. They click create. Stripe then shows them a signing secret, which goes into the store's server settings, kept secret just like the A-P-I keys from episode five.\n\nNow watch a real order. The customer clicks pay. Stripe charges the card. Within moments, Stripe's servers send an H-T-T-P POST request to the store's endpoint. The payload says, in J-S-O-N, this checkout session was completed, here's its I-D, here's the amount, here's the customer's email.\n\nThe store's server receives it and does three things in order. One, it checks the signature using that signing secret, so it knows this really came from Stripe and not from someone faking a free order. Two, it answers right away with a two-hundred, got it. Three, it does the real work: marks order number such-and-such as paid, sends the receipt, and drops a shipping ticket into the warehouse system.\n\nWhat if the store's server is down for maintenance when that message arrives? Stripe doesn't get its two-hundred, so it tries again later, and again, waiting a bit longer each time. In live mode, Stripe's docs say it keeps trying for up to three days. When the store's server comes back up, the message lands, and the order still gets marked as paid. Nobody had to poll anything."
+    },
+    {
+      "segment": "Example two",
+      "heading": "The code push that tells everyone",
+      "body": "Second example, from the developer side of the world: GitHub.\n\nSay a team keeps their website's code in a GitHub repository, and they want two things to happen every time someone pushes new code. They want their build server to start building the new version of the site, and they want a message in their team chat.\n\nThey could have the build server ask GitHub every minute, anything new in the repo? That's the person at the host stand again. Instead, they set up a webhook. Here's the actual path. In the repository, they open Settings, then Webhooks, then Add webhook. GitHub asks for a payload U-R-L, which is the build server's endpoint. It asks for a secret, which is that shared secret word for signing. And it asks which events should trigger it. They pick just the push event.\n\nNow a developer finishes a change and pushes it. GitHub immediately sends a POST request to the build server. The payload says: a push happened, on this repository, on this branch, here are the commits and who made them. The build server checks the signature, answers two-hundred, and starts the build.\n\nHere's the part that's really useful on a troubleshooting call. Back on that webhook settings page, GitHub keeps a list of recent deliveries. Click one, and you can see exactly what GitHub sent, and exactly what the other side answered, including the status code. And there's a Redeliver button. GitHub's own guidance says that if your server goes down, you should redeliver the missed webhooks once it's back up. So unlike Stripe, you shouldn't count on GitHub to keep trying on its own. Different providers, different retry rules, and checking those rules is part of the job.\n\nAnd this podcast is a cousin of this example. When the episode you're hearing got pushed to GitHub this morning, that push was an event, and it kicked off the workflow that turned the script into audio and updated the podcast feed. That happens inside GitHub's own walls rather than through a webhook to an outside server, but it's the same idea: something happens, and the reaction starts automatically instead of someone checking on a timer."
+    },
+    {
+      "segment": "Example three",
+      "heading": "The alert that lands in Slack",
+      "body": "Third example, and this one flips your seat. So far you've been on the receiving end. Here, you're the one sending.\n\nSlack has something called incoming webhooks. It's a special web address that drops a message into one specific Slack channel whenever anything sends a POST request to it. It's the easiest way to get an alert into a channel without building a full Slack bot.\n\nHere's how you make one. You go to Slack's app management page and create a small Slack app. In that app's settings, you switch on Incoming Webhooks. Then you click Add New Webhook to Workspace, pick the channel, say, a channel called orders alerts, and Slack hands you a long U-R-L. Slack's docs are blunt about it: that U-R-L contains a secret. Don't paste it anywhere public, and don't commit it to a code repository. Anyone who has it can post into your channel.\n\nNow hook it to something real. Go back to the coffee bean store. When the store's server receives that Stripe webhook for a big order, say over five hundred dollars, it sends its own little POST request to the Slack incoming webhook. The payload is tiny, basically one field called text, saying something like: new order, five hundred and forty dollars, from a café in Denver. A second later, everyone in the orders alerts channel sees it.\n\nLook at the chain you just built. The customer pays. Stripe calls the store. The store calls Slack. Two webhooks, one after the other, and nobody polled anything. That pattern, one event setting off a little chain reaction across different products, is what a lot of integration work actually looks like day to day.\n\nYour internship has its own version of this. In Power Automate, there's a trigger called When an H-T-T-P request is received. When you save a flow that starts with it, Power Automate generates a U-R-L for you. That U-R-L is a webhook endpoint. Any outside system that sends a POST request to it starts your flow. And you can choose who's allowed to call it: anyone, any user in your organization, or specific users. So if a vendor ever says, just give us a U-R-L and we'll notify you, that trigger is one way to do exactly that."
+    },
+    {
+      "segment": "Example four",
+      "heading": "The call where orders stopped syncing",
+      "body": "Last example, and this one is pure Solutions Engineer.\n\nYou're on a call with a customer. They connected your company's product to their online store, and they say: orders stopped showing up in your system on Monday. Nothing changed on our end. Help.\n\nIf the integration runs on webhooks, here's how you walk it, step by step.\n\nStep one: find the delivery log. Almost every provider has one, like the Event deliveries tab in Stripe or the recent deliveries list in GitHub. It shows each message that was sent, whether it was delivered, pending, or failed, and the status code that came back.\n\nStep two: read the status codes, because they tell the story. If you see four-oh-four, not found, the endpoint address is wrong or the page moved. Maybe someone renamed a path during a website update. If you see four-oh-one, unauthorized, or four-oh-three, forbidden, something in front of the endpoint is blocking it, like a login requirement or a firewall rule that doesn't recognize the provider. If you see five hundreds, the receiving server is crashing while it handles the message. And if you see timeouts, the server is taking too long to answer, usually because it's doing all the heavy work before it sends the two-hundred. The fix for that one is the habit from example one: say got it first, then do the work.\n\nStep three: check the signature. A really common Monday-morning mystery is that someone rotated the signing secret, or copied the one from the test environment into the live server. Every message then fails the signature check, so the receiver throws it away, and from the outside it looks like the messages never came.\n\nStep four: catch up on what was missed. Once the endpoint is fixed, providers with retries will deliver on their own, as long as you're inside their window. If you're outside it, you redeliver from the log, or use the regular A-P-I to fetch everything since Monday. That's the nice part: webhooks and the normal A-P-I work as a team. The webhook is the doorbell, and the A-P-I is how you go get the full package.\n\nAnd one warning to give the customer. Because of retries, the same event can arrive twice. If their system isn't careful, one order might show up twice. Good receivers remember the event I-D they've already handled and skip repeats. That's the word idempotent from episode three: doing the same thing twice has the same effect as doing it once."
+    },
+    {
+      "segment": "Why it matters",
+      "heading": "Where you'll hear this at work",
+      "body": "So where does this actually show up for you?\n\nOn sales and discovery calls, customers will ask, does your product support webhooks? What they mean is, can you tell my other systems the moment something happens, instead of making us check. You want to be able to answer clearly: which events you send, how they're signed, how retries work, and where they can see the delivery log.\n\nIn demos, webhooks are some of the best moments you can show. Make a test payment, and two seconds later a message pops up in a Slack channel, or a row appears in a spreadsheet. Non-technical people in the room instantly get it, and you can explain it with the restaurant picture: we don't make you keep asking, we text you when it's ready.\n\nIn troubleshooting, the four-step walk from the last example is close to a script: delivery log, status codes, signature secret, catch up on missed events. Saying that calmly on a call, while the customer is stressed, builds a lot of trust.\n\nIn interviews, polling versus webhooks is a classic question for integration-heavy roles. The strong answer goes beyond defining them. It names the tradeoffs: polling is simple and works even when the other side can't reach you, but it's wasteful and late. Webhooks are instant and efficient, but you need a public endpoint, signature checks, and a plan for retries and duplicates.\n\nAnd if you end up in data or cloud work, the same idea shows up under the name event-driven. Stripe's own setup screen offers to send events into Amazon's and Microsoft's cloud event services, not just to a web address. Different plumbing, same idea: something happened, go tell whoever cares."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the pocket version.\n\nA webhook is an automatic message one system sends to another the moment something happens. Polling is walking up to the host stand every two minutes. A webhook is leaving your number and getting a text when the table is ready.\n\nYou give the provider an endpoint, pick the event types you care about, and they send a J-S-O-N payload when it happens. You check the signature, answer two-hundred right away, then do the work, and you plan for retries and the occasional duplicate.\n\nYou saw it today in a Stripe payment marking an order as paid, a GitHub push starting a build, an alert landing in Slack, and a customer call where the delivery log told the whole story.\n\nWhen you're parked, open the text version and mark how this one landed, and leave a note if anything's still fuzzy.\n\nTomorrow, OAuth gets its own full episode: the valet key that lets one app act for you inside another, without ever handing over your password. Drive safe."
+    }
+  ]
+}
