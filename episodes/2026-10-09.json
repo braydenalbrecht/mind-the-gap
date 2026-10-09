@@ -1,0 +1,114 @@
+{
+  "number": 11,
+  "date": "2026-10-09",
+  "title": "Empty Apartment or Hotel Room?",
+  "summary": "IaaS, PaaS and SaaS as the only topic: four ways to have a place to live (build a house, rent an empty apartment, a serviced apartment, a hotel room) and the shared responsibility line that moves with each. Walked through one web store built on an AWS EC2 virtual machine vs a platform like Heroku vs Shopify, this podcast layer by layer, Microsoft 365 and Power Automate from the internship, and a customer call about Atlassian ending Server support. With an OAuth and API key callback.",
+  "minutes": 15,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "iaas-paas-saas",
+      "name": "IaaS, PaaS and SaaS",
+      "blurb": "Three levels of handing off work to a cloud provider: rent a virtual machine and run it yourself (empty apartment), hand over your code and let them run it (serviced apartment), or just sign up and use the finished product (hotel). The shared responsibility line moves with each, but your data and access always stay yours"
+    },
+    {
+      "id": "oauth",
+      "name": "OAuth (callback)",
+      "blurb": "The tokens from yesterday have to live on someone's computer; in SaaS tools like Microsoft 365, the OAuth connections and who owns them are part of what stays the customer's job"
+    }
+  ],
+  "sources": [
+    {
+      "title": "AWS Well-Architected Security Pillar: Shared responsibility (EC2 customer manages guest OS patches, software, security groups)",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/shared-responsibility.html"
+    },
+    {
+      "title": "Atlassian: Server end of support (February 15, 2024; move to Cloud or Data Center)",
+      "url": "https://www.atlassian.com/licensing/server-end-of-support"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "on-prem",
+      "term": "On-premises (on-prem)",
+      "definition": "Running software on servers a company owns and keeps in its own building or data center, managing everything from the hardware up. Like building your own house."
+    },
+    {
+      "id": "iaas",
+      "term": "Infrastructure as a service (IaaS)",
+      "definition": "Renting virtual machines, storage and networking from a cloud provider like AWS or Azure. The provider runs the hardware; you manage the operating system, software, updates and firewall. Like renting an empty apartment."
+    },
+    {
+      "id": "paas",
+      "term": "Platform as a service (PaaS)",
+      "definition": "A cloud service where you hand over your code and the provider runs it, handling servers, operating system updates and scaling. Examples: Heroku, Azure App Service, Google App Engine. Like a serviced apartment."
+    },
+    {
+      "id": "saas",
+      "term": "Software as a service (SaaS)",
+      "definition": "A finished application you sign up for and use over the internet, usually by subscription, while the vendor runs everything behind it. Examples: Gmail, Slack, Salesforce, Shopify, Microsoft 365. Like a hotel room."
+    },
+    {
+      "id": "virtual-machine",
+      "term": "Virtual machine (VM)",
+      "definition": "A computer that exists as software, carved out of a bigger physical server. Cloud providers rent them by size and by the hour; AWS calls theirs EC2 instances."
+    },
+    {
+      "id": "shared-responsibility",
+      "term": "Shared responsibility model",
+      "definition": "The split of security and maintenance jobs between a cloud provider and its customer. The line moves depending on IaaS, PaaS or SaaS, but the customer always owns their data and who has access to it."
+    },
+    {
+      "id": "security-group",
+      "term": "Security group",
+      "definition": "AWS's name for the firewall around a virtual machine: the rules for which network traffic is allowed in and out. Setting it up is the customer's job."
+    },
+    {
+      "id": "self-hosted",
+      "term": "Self-hosted",
+      "definition": "A version of a vendor's software that the customer installs and runs on their own servers or cloud machines, like Atlassian Data Center, as opposed to the vendor's SaaS version."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Callback",
+      "heading": "Where yesterday's keys live",
+      "body": "Morning, and welcome to Mind the Gap. This is episode eleven, and it's Friday.\n\nQuick look back first. Yesterday was OAuth, the valet key. When your manager clicked Add to Slack, the meeting notes tool got a limited token to post into one channel, without ever seeing anyone's password. And the day before that, webhooks: Stripe calling your app the moment an order is paid.\n\nHere's a question none of those episodes answered. When Slack hands that token to the meeting notes tool, where does the meeting notes tool actually live? Somebody's computer is receiving that token, storing it, and using it at two in the morning. Whose computer is it? Who keeps it running, who installs the security updates, and who gets paged when it falls over?\n\nThat's today's one topic: I-a-a-S, P-a-a-S and S-a-a-S. Infrastructure as a service, platform as a service, and software as a service. Three words you will hear on almost every customer call, and they all answer the same question: when you use the cloud, how much of the work do you hand to someone else, and how much do you keep?"
+    },
+    {
+      "segment": "The idea",
+      "heading": "Four ways to have a place to live",
+      "body": "Here's the picture we'll use for the whole episode: four ways to have a place to live.\n\nOption one, you buy land and build a house. You own everything. The foundation, the plumbing, the wiring, the roof, the furniture. If a pipe bursts at midnight, that's your problem. In tech, this is called on-premises, or on-prem. A company buys its own servers, puts them in a room in its own building, and runs everything itself, from the power and air conditioning up to the software.\n\nOption two, you rent an empty apartment. The landlord owns the building and keeps the walls, the plumbing and the electricity working. But the apartment is bare. You bring the furniture, you set it up, you clean it, and if your couch breaks, that's on you. That's infrastructure as a service. A cloud provider like Amazon Web Services, which everyone calls A-W-S, or Microsoft Azure, rents you a virtual machine. A virtual machine is a computer that exists as software, carved out of a much bigger physical computer in their data center. You choose how big it is, you install the operating system's updates, you install your software, and you keep it secure. They keep the building, the hardware and the network running.\n\nOption three, a furnished, serviced apartment. Furniture's already there. Cleaning is included. You just show up with your suitcase and live. That's platform as a service. You hand the provider your code, your suitcase, and they handle the machine, the operating system, the updates and the scaling. You never log into a server. You just say, here's my app, run it.\n\nOption four, a hotel room. You don't even bring the suitcase's worth of setup. You walk in, the bed is made, there's a front desk. You just use it. That's software as a service. Gmail, Slack, Salesforce, Zoom, Microsoft 365. You don't run anything. You sign up, you log in, you use the finished product, and you pay a subscription.\n\nNotice what changes as you move from house to hotel. Every step, you hand off more of the work, and you also give up some control. In a hotel you can't knock down a wall. In your own house you can, but you also have to fix the roof.\n\nOne idea ties all four together, and it's the one supporting idea for today: the shared responsibility model. In every one of these setups, some jobs belong to the provider and some belong to you. The line just moves. And one thing never moves to the provider, no matter which option you pick: your data, and who you let into it. Even in the hotel, you decide who gets a key to your room. Hold onto that. It's going to come back in every example."
+    },
+    {
+      "segment": "Example one",
+      "heading": "One web store, three ways",
+      "body": "First example. Picture a small company that sells custom phone cases and wants to run an online store. There are three very different ways they could do it, one for each level.\n\nThe infrastructure way. Their developer logs into the A-W-S console and goes to the service called E-C-two, which is Amazon's virtual machine service. She clicks launch instance. She picks an operating system image, say Ubuntu Linux. She picks a size, which is how many processors and how much memory, and the price per hour changes with that. She creates a key pair, which is how she'll log into the machine securely. And she sets up a security group, which is A-W-S's word for the firewall around that machine, the rules for what traffic is allowed in. She opens up web traffic and keeps everything else closed. Then she logs into her brand new machine, installs a web server, installs a database, copies the store's code onto it, and turns it on.\n\nAnd now she owns a lot. According to A-W-S's own shared responsibility description, with E-C-two the customer manages the guest operating system, including updates and security patches, any software installed on it, and the firewall settings. So when a serious security hole is announced in Linux next month, Amazon does not patch her machine. She does. If the store gets popular on Black Friday and the machine runs out of memory, she has to notice and resize it. Lots of control, lots of chores. Empty apartment.\n\nThe platform way. Same store, but this time the developer uses a platform service, something like Heroku, or Azure App Service, or Google App Engine. She creates an app on the platform's dashboard, connects her GitHub repository, and every time she pushes code, the platform builds it and runs it. She never picks an operating system. She never logs into a server. If traffic spikes, she drags a slider, or turns on automatic scaling, and the platform runs more copies of her app. Her chores shrink to her own code, her settings and her data. Serviced apartment.\n\nThe software way. Same company, but nobody writes code at all. The owner signs up for Shopify. She picks a theme, uploads photos of the phone cases, connects Stripe or Shopify's own payments, and she's selling that afternoon. Shopify runs the servers, the code, the security updates and the checkout page. She's responsible for her product listings, her customer data settings, and who on her team gets an admin login. Hotel.\n\nNone of these is the right answer in general. The infrastructure way makes sense if the store needs something unusual that a platform won't allow. The software way makes sense if the company just wants to sell cases and has no developers. That trade-off, control versus chores, is the whole topic."
+    },
+    {
+      "segment": "Example two",
+      "heading": "This podcast, layer by layer",
+      "body": "Second example is the show you're listening to right now, because it touches every layer.\n\nEach weekday morning, a scheduled job writes the episode as a text file and pushes it to a GitHub repository. That push kicks off GitHub Actions, which is GitHub's service for running automated jobs. GitHub Actions gives the job a fresh machine for a few minutes. That machine turns the text into audio with a text to speech voice, and then the audio and the podcast feed get published to GitHub Pages, which hosts simple websites.\n\nSo which layer is that? Think about what I had to manage. I never chose a server size. I never installed operating system updates. I never logged into a machine. I wrote a short file that says, use this version of Python, install these tools, run this script. GitHub supplies the machine, throws it away when the job finishes, and keeps the hosting running. That's platform territory. The serviced apartment. I bring the suitcase, which is the script, and they handle the rest.\n\nNow flip to your side of it. You listen in Apple Podcasts or Overcast. You didn't install a server to do that. You opened an app that someone else runs, and it checks the feed for new episodes for you. From where you sit, that's software as a service, or close to it. The hotel.\n\nAnd notice the shared responsibility line, even here. GitHub keeps the machines patched. But if I pasted a secret key directly into that repository instead of storing it in GitHub's secrets settings, that leak would be my fault, not GitHub's. Remember API keys from episode five: keep them out of the code. That rule doesn't go away just because the platform is managed. The data and the access are always yours."
+    },
+    {
+      "segment": "Example three",
+      "heading": "Your internship, in hotel terms",
+      "body": "Third example, from your internship.\n\nWhen you build a Power Automate flow that takes a Microsoft Forms response and saves it to a SharePoint list, you're living almost entirely on the software as a service floor. Forms, SharePoint, OneDrive and Outlook are all part of Microsoft 365, which is software as a service. Your company doesn't run servers for any of it. Microsoft handles the machines, the updates and the uptime. If SharePoint has an outage, your I-T team doesn't go fix a server. They check Microsoft's service health page and wait, and maybe tell users what's going on.\n\nSo what's left on your company's side? Exactly the stuff that never moves to the provider. Who has access to which SharePoint site. Whether a form that collects employee information is shared with the whole company or only one team. Which connections your flows use, the OAuth connections from yesterday, and what happens to them when the person who created them leaves. Microsoft won't fix a SharePoint site that's accidentally shared with everyone. That's a customer-side setting, so it's a customer-side mistake.\n\nPower Automate itself is a nice in-between case. It's a finished product you log into, so it feels like a hotel. But you're also building your own logic inside it, flows with triggers and actions, without managing any servers. People often call tools like this low-code platforms, which sits close to the platform layer. The labels blur at the edges, and that's normal. What matters is being able to say who handles what.\n\nAnd here's how the bigger company you might work for could use all three layers at once. Microsoft 365 for email and documents, that's software. Azure App Service for an internal web app the developers built, that's platform. And a few Azure virtual machines running an old piece of accounting software that only runs on one specific version of Windows, that's infrastructure. Most real companies are a mix."
+    },
+    {
+      "segment": "Example four",
+      "heading": "The customer who has to move",
+      "body": "Fourth example, and this one is a real Solutions Engineer situation.\n\nFor years, Atlassian, the company behind Jira and Confluence, sold a version called Server. Customers installed it on their own machines, on-prem or on their own cloud virtual machines, and ran it themselves. Then Atlassian ended support for Server products on February fifteenth, twenty twenty-four. After that date, no more support and no more bug fixes. Customers had two supported paths: move to Atlassian Cloud, which is their software as a service version, or upgrade to Data Center, which is a self-managed version they still run themselves.\n\nNow put yourself on a call with one of those customers. Say it's a hospital's I-T team, and they're nervous. Here's the conversation you'd actually have, and notice that every question maps to today's topic.\n\nThey ask: if we move to your cloud, who patches it? You answer: we do. Security updates get applied for you, no maintenance windows on your side. That's the hotel benefit.\n\nThey ask: can we still install that custom plugin our team wrote ten years ago? You answer honestly: maybe not. In the cloud version you can't change the underlying servers, so only apps built for the cloud version will work. That's the hotel downside. You can't knock down the wall.\n\nThey ask: where will our data physically live? A real question, especially in health care and government. With self-hosted software, they decide. With software as a service, it's whatever regions the vendor offers. That's a control trade-off too.\n\nAnd they ask: so what are we still responsible for? You answer with the shared responsibility line: who gets accounts, what permissions they have, whether single sign-on is turned on, and what data they put in. That never moves.\n\nA good Solutions Engineer doesn't just say, the cloud version is better. They walk the customer through what they gain, what they give up, and what stays theirs, and then help them pick."
+    },
+    {
+      "segment": "Why it matters",
+      "heading": "Where you'll hear these words",
+      "body": "So where does this show up for you, concretely?\n\nFirst, discovery calls. One of the earliest questions you ask a prospect is how they run things today. If they say we host it ourselves on our own servers, you now know they're used to control, and they'll care about patching, data location and custom setups. If they say we're all in on software as a service, they'll care more about integrations, single sign-on and admin settings.\n\nSecond, security reviews. Customers send long questionnaires, and a big chunk of them boils down to the shared responsibility model. Who encrypts the data, who patches the servers, who controls access. If you can draw that line clearly, out loud, in a meeting, you will sound like someone they can trust.\n\nThird, troubleshooting. When something breaks, the first useful question is which side of the line is it on. Is the vendor's service down, in which case you check their status page and wait? Or is it something in the customer's settings, like an expired connection or a permission change, which they can fix today? Knowing the layer saves an hour of guessing.\n\nFourth, interviews. Explain I-a-a-S, P-a-a-S and S-a-a-S with an example is a classic warm-up question for cloud, data and Solutions Engineer roles. The weak answer lists definitions. The strong answer picks one real product for each, Amazon's virtual machines, Heroku or Azure App Service, and Gmail or Slack, and says who patches what.\n\nAnd if you end up in data engineering, the same ladder applies. Running your own database on a virtual machine is infrastructure. A managed database service, where the provider handles backups and updates, is closer to platform. A tool you just log into to build dashboards is software."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the pocket version.\n\nInfrastructure, platform and software as a service are three levels of how much you hand off. Infrastructure is the empty apartment: you get a virtual machine and you manage the operating system, the software and the security settings. Platform is the serviced apartment: you bring your code and the provider runs it. Software is the hotel: you sign up and use a finished product.\n\nThe further you go, the fewer chores and the less control. And the shared responsibility line moves with you, except for one thing that always stays yours: your data and who has access to it.\n\nTomorrow is Saturday, so it's the weekend recap. We'll revisit this week's topics, webhooks, OAuth and today's cloud layers, with brand new examples, plus a short return to large language models. Then Monday we start on databases with S-Q-L versus No-S-Q-L.\n\nDrive safe, and have a good Friday."
+    }
+  ]
+}
