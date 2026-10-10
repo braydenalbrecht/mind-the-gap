@@ -1,0 +1,93 @@
+{
+  "number": 12,
+  "date": "2026-10-10",
+  "title": "One Booking, Start to Finish",
+  "summary": "Weekend recap that follows one made-up dog groomer's booking through the whole week: connecting Google Calendar to Calendly with OAuth, a Calendly webhook caught by Zapier that creates a HubSpot contact with a REST POST, where each piece sits in the cloud layers, an AI-drafted confirmation that invents a price until it's grounded in the real price list, and a four-link troubleshooting call when bookings stop syncing.",
+  "minutes": 13,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "oauth",
+      "name": "OAuth (recap)",
+      "blurb": "The valet key: Calendly reading Google Calendar and Zapier writing to HubSpot, and what happens when access is removed"
+    },
+    {
+      "id": "webhook",
+      "name": "Webhooks (recap)",
+      "blurb": "Calendly calling Zapier the moment a booking happens, then a REST call into HubSpot"
+    },
+    {
+      "id": "llm-basics",
+      "name": "LLMs and grounding (recap)",
+      "blurb": "Why the AI draft guessed a price, and how putting the price list on its desk fixed it"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Calendly Help Center: Webhooks overview (invitee created and canceled events, plans)",
+      "url": "https://calendly.com/help/webhooks-overview"
+    },
+    {
+      "title": "HubSpot Developers: Contacts API (POST to create, email recommended for de-duplication)",
+      "url": "https://developers.hubspot.com/docs/guides/api/crm/objects/contacts"
+    },
+    {
+      "title": "Google Account Help: Manage connections between your Google Account and third-party apps",
+      "url": "https://support.google.com/accounts/answer/13533235"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "automation-platform",
+      "term": "Automation platform",
+      "definition": "A hosted service like Zapier, Make or Power Automate that connects apps without custom code: a trigger (often a webhook) starts a flow, and later steps call other apps' APIs using connections you've authorized."
+    },
+    {
+      "id": "connected-apps-page",
+      "term": "Connected apps page",
+      "definition": "The page in an account (for example Google's linked apps page) that lists every third-party app you've granted OAuth access to, and lets you remove that access. Removing it revokes the app's tokens without changing your password."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Weekend recap",
+      "heading": "One booking, start to finish",
+      "body": "Morning, and welcome to Mind the Gap. This is episode twelve, it's Saturday, so it's the weekend recap.\n\nThis week covered a lot of ground. Monday was REST, the way most A-P-Is organize their menu. Tuesday was large language models. Wednesday was webhooks. Thursday was OAuth. And Friday was the cloud layers, infrastructure, platform and software as a service.\n\nToday we're not going to walk through those one at a time. Instead, we're going to follow one small business through one ordinary Tuesday, and watch most of this week's ideas show up in a single chain of events. Our business is a made up one. Maya runs a one-person dog grooming shop. She takes bookings online, she keeps a customer list, and she'd like to stop copying names from one app into another by hand.\n\nThe three ideas getting the most airtime today are OAuth, webhooks, and large language models, because those are the ones that are newest or that you told me felt shaky. REST and the cloud layers show up along the way as quick callbacks. Every example is new. No Stripe, no GitHub, no Slack alerts this time."
+    },
+    {
+      "segment": "The refresher",
+      "heading": "Four pictures in two minutes",
+      "body": "Before we meet Maya, here are the pictures from this week, side by side.\n\nOAuth is the valet key. When one app needs to act for you inside another app, you don't hand over your password. You get sent to the other app's own sign-in page, it shows you a consent screen listing exactly what's being asked for, those are the scopes, and when you click allow, the app gets a token that can only do those things. You can take that key back any time, and your password never moves.\n\nA webhook is leaving your number with the host. Instead of one app asking another every few minutes, has anything happened yet, which is polling, the second app promises to call you the moment something happens. You give it a web address, called the webhook endpoint, and when the event happens, it sends a message to that address with the details inside, the payload.\n\nThe cloud layers are four ways to have a place to live. Build a house, rent an empty apartment, rent a serviced apartment, or check into a hotel. The further you go, the fewer chores you do, and the less you control.\n\nAnd a large language model is the friend who read an enormous library and then lost access to it. It writes one likely next word piece at a time, based on patterns. It doesn't look things up unless someone puts the right page on its desk. That last part, putting the right page on the desk, is called grounding, and it's going to matter in example four."
+    },
+    {
+      "segment": "Example one",
+      "heading": "Maya connects her calendar",
+      "body": "Maya signs up for Calendly, a scheduling app. Customers pick a time from her open slots and book a grooming appointment. But Calendly has a problem. It doesn't know when Maya is busy. Her dentist appointment and her kid's soccer game live in her Google Calendar.\n\nSo during setup, Calendly asks her to connect a calendar. Here's what actually happens, step by step.\n\nShe clicks connect Google Calendar. Calendly doesn't show her a box asking for her Google password. Instead, her browser gets sent to Google's own sign-in page. That's the first sign you're looking at OAuth. She signs in to Google, on Google's page, so Calendly never sees her password.\n\nThen Google shows the consent screen. It names Calendly, and it lists what Calendly wants. Roughly, see the events on her calendar so it can block out busy times, and add events so a new booking shows up there too. Those are the scopes. She clicks allow.\n\nGoogle sends her browser back to Calendly's redirect address with a short-lived code. Behind the scenes, Calendly's server trades that code with Google for tokens. An access token, the valet key it uses on each request, and a refresh token, so it can quietly get fresh access tokens later without bothering Maya.\n\nFrom now on, when someone looks at her booking page, Calendly calls Google's calendar A-P-I with that token, asks which times she's busy, and only shows the free slots.\n\nNow the part that matters on support calls. Google has a page in every Google account that lists the third-party apps with access. If Maya ever goes there, picks Calendly, and clicks remove access, the valet key stops working. Calendly would no longer see her busy times. Her password didn't change, nothing got hacked, the key was simply taken back. Keep that in mind, because it comes back at the end."
+    },
+    {
+      "segment": "Example two",
+      "heading": "The booking that announces itself",
+      "body": "A customer named Jordan books a bath and nail trim for his beagle, Thursday at ten. Maya wants Jordan added to her customer list automatically. Her customer list lives in HubSpot, a customer relationship manager, which is just a fancy name for a database of customers and conversations.\n\nCalendly and HubSpot don't know about each other. So Maya uses Zapier, which is an automation platform. Think of it as a hosted version of what you build in Power Automate at your internship. It sits in the middle and passes messages between apps.\n\nHere's the chain.\n\nFirst, the webhook. Calendly, on its paid plans, can send webhooks. In Zapier, Maya picks the webhook trigger called catch hook, and Zapier gives her a unique web address. That's the webhook endpoint, Maya's phone number left with the host. That address gets registered with Calendly, and Maya chooses which event she cares about, a new invitee being created, meaning a new booking.\n\nJordan clicks confirm. Within seconds, Calendly sends a message to Zapier's address. Nobody asked. Calendly just called, the way the host texts you when your table is ready. Inside the payload is everything about the booking: Jordan's name, his email, the time, which event type he picked, even his answer to \"what's your dog's name.\"\n\nOne practical detail from setting this up. When Maya first builds the flow, Zapier wants to see a sample message so she can map the fields. But Calendly only sends webhooks for new activity, not for bookings that already happened. So the way you test it is to book a fake appointment yourself, watch the payload land in Zapier, and then cancel it. That's exactly what you'd do in a customer demo, too. Make a test booking live, and let them watch the data show up on the other side within seconds.\n\nSecond, a REST call. Zapier now has to put Jordan into HubSpot. This is Monday's episode in action. HubSpot organizes its A-P-I around things with addresses, and contacts are one of those things. To add one, you send a POST, the create move, to HubSpot's contacts address, with a body that contains the properties, like email, first name, and last name. HubSpot recommends always sending the email, because that's how it avoids creating the same person twice. If it works, HubSpot answers two-oh-one, created, with an I-D for the new contact.\n\nThird, notice who's asking. When Maya first connected HubSpot inside Zapier, she went through another OAuth sign-in, on HubSpot's page this time, and approved permission to read and write contacts. So the POST rides along with Zapier's valet key for Maya's HubSpot account.\n\nOne booking. A webhook in, a REST call out, and an OAuth token on each side. That is what most integrations look like underneath."
+    },
+    {
+      "segment": "Example three",
+      "heading": "Where each piece lives",
+      "body": "Quick callback to yesterday. Let's put each piece of Maya's setup into the cloud layers.\n\nCalendly, Google Calendar, HubSpot and Zapier are all software as a service, the hotel room. Maya signs up, logs in, and uses them. She never thinks about servers, updates or backups. What she does still own, on the shared responsibility line, is her data and who has access. Which, notice, is exactly what the consent screens were about.\n\nNow imagine her nephew offers to replace Zapier with his own little program that catches the Calendly webhook and calls HubSpot. Suddenly the layer question is real. That program needs to live somewhere with a public web address that's always on, because a webhook can arrive at three in the morning. He could rent a virtual machine on Amazon's E-C-two, the empty apartment, and then he's patching the operating system and opening the right port himself. Or he could put the code on a platform like Render or Heroku, the serviced apartment, where he just pushes code and gets a web address back. Either way, he now owns something Zapier was quietly handling for Maya: if his program is down when Calendly calls, that booking may be retried for a while, but if it stays down long enough, it's simply missed.\n\nFor a one-person grooming shop, the honest answer is usually stay in the hotel. That trade-off, more control versus fewer chores, is a conversation you'll have with customers constantly."
+    },
+    {
+      "segment": "Example four",
+      "heading": "The assistant that almost quoted the wrong price",
+      "body": "Maya adds one more step. When a booking comes in, an A-I step in Zapier drafts a friendly confirmation email for her to review. It's calling a large language model behind the scenes.\n\nThe first draft looks great, except it says a bath and nail trim is forty-five dollars. Maya charges sixty. Where did forty-five come from?\n\nTuesday's picture explains it. The model never saw Maya's price list. It read a huge library of text during training, and plenty of grooming shops charge something in that range. So when it got to the spot where a price belonged, it wrote a price that fits the pattern. Not a lookup. A likely-sounding guess. That's a hallucination, and it's the same thing that happened with the airline chatbot that invented a refund policy.\n\nThe fix is grounding, putting the right page on the desk. Maya edits the instructions for that step, the system prompt, and pastes in her real service list with prices, plus a rule: only use prices from this list, and if the service isn't on it, say Maya will confirm the price. She also maps in the actual booking details from the webhook payload, Jordan's name, his dog's name, the time.\n\nNow the draft says sixty dollars, uses the beagle's real name, and has the right time. The model didn't get smarter. It just finally had the facts in front of it.\n\nNotice how the pieces connect. The webhook delivered the booking details. The automation step pasted those details, plus the price list, into the model's context window, the desk. And the model wrote around them. The webhook and the grounding are working together. Without the payload, the model would have to guess Jordan's name, too. And Maya still reviews before sending, because grounding lowers the odds of a mistake. It doesn't promise zero."
+    },
+    {
+      "segment": "Why it matters",
+      "heading": "The Monday call",
+      "body": "Here's how this whole chain shows up in your job. You're a Solutions Engineer at a scheduling company, and a customer like Maya calls. New bookings stopped showing up in HubSpot, starting Friday.\n\nYou now have a map, and you walk it link by link instead of guessing.\n\nLink one, did the webhook fire? Check the delivery side. Did Calendly send the event, and what status code came back from the endpoint? If there were no deliveries at all, maybe the subscription was removed, or the plan changed and webhooks aren't included anymore.\n\nLink two, did the receiving step run? In Zapier, the run history shows each booking that arrived and which step failed.\n\nLink three, did the REST call to HubSpot succeed? A four-oh-one means the key isn't valid anymore. A four-oh-three means the key works but lacks the permission.\n\nAnd link four is usually the answer. Someone revoked an OAuth connection. Maybe Maya's assistant cleaned up the connected apps page, or the person who originally connected HubSpot left the company, like the integration that died when Dana left in Thursday's episode. The fix is to reconnect, ideally with a shared integration account instead of one person's login.\n\nNotice that only one of those links is about broken code. The other three are about events, permissions and people. That's typical. Most integration problems you'll see as a Solutions Engineer aren't bugs in the product. They're a missing subscription, an expired or revoked token, or a scope nobody granted. Knowing where each of those shows up, the delivery log, the run history, the status code, the connected apps page, is the skill.\n\nBeing able to say, let's check the four links in order, calmly, on a call, is what makes a customer trust you."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the week in one breath.\n\nOne booking at Maya's shop touched almost everything. OAuth let Calendly read her Google Calendar and let Zapier write to HubSpot, each through a consent screen and a revocable valet key, never her password. A webhook let Calendly announce the booking the moment it happened instead of being asked over and over. A REST call, a POST to HubSpot's contacts, created the customer. All of it lived in software as a service, the hotel room. And a language model drafted the email, but only got the price right once the real price list was on its desk.\n\nOn Monday we start on data. S-Q-L versus No-S-Q-L, two different ways to store things like Maya's customer list, and why a company would pick one over the other. Slowly, with examples.\n\nHave a great weekend, and drive safe."
+    }
+  ]
+}
