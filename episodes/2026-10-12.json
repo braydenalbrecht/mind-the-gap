@@ -1,0 +1,145 @@
+{
+  "number": 13,
+  "date": "2026-10-12",
+  "title": "Printed Forms or Manila Folders?",
+  "summary": "SQL vs NoSQL as the only topic: printed forms in a filing cabinet (relational tables, fixed columns, primary keys, transactions) vs manila folders and a coat check (document databases and key-value stores). Walked through checkout at a phone-case store in PostgreSQL, a mixed product catalog in MongoDB, holiday shopping carts in DynamoDB plus sessions in Redis, and SharePoint lists from the internship, then where it comes up on discovery calls, demos, a duplicate-records ticket, and interviews. With a REST and CRUD callback.",
+  "minutes": 15,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "sql-vs-nosql",
+      "name": "SQL vs NoSQL",
+      "blurb": "Two families of databases. SQL (relational) is printed forms in a filing cabinet: tables with fixed columns, rows linked by IDs, and all-or-nothing transactions. NoSQL trades strictness for flexibility or speed: document databases (folders shaped like JSON) and key-value stores (a coat check). Most companies use both"
+    },
+    {
+      "id": "rest",
+      "name": "REST (callback)",
+      "blurb": "The four REST moves don't stop at the API: a POST becomes an insert, a GET a select or find, a PATCH an update, a DELETE a delete. The API is the front counter; the database is where CRUD actually lands"
+    }
+  ],
+  "sources": [
+    {
+      "title": "PostgreSQL docs: Concepts (relational database, tables, rows, columns)",
+      "url": "https://www.postgresql.org/docs/current/tutorial-concepts.html"
+    },
+    {
+      "title": "PostgreSQL docs: Transactions (all-or-nothing)",
+      "url": "https://www.postgresql.org/docs/current/tutorial-transactions.html"
+    },
+    {
+      "title": "MongoDB docs: Documents (JSON-like BSON documents, collections)",
+      "url": "https://www.mongodb.com/docs/manual/core/document/"
+    },
+    {
+      "title": "Amazon DynamoDB Developer Guide: Core components (tables, items, partition key)",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html"
+    },
+    {
+      "title": "PostgreSQL docs: JSON types",
+      "url": "https://www.postgresql.org/docs/current/datatype-json.html"
+    },
+    {
+      "title": "MongoDB docs: Transactions",
+      "url": "https://www.mongodb.com/docs/manual/core/transactions/"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "database",
+      "term": "Database",
+      "definition": "A program whose job is to store information safely and find it again fast. It's the back room behind an app's API, where creates, reads, updates and deletes actually land."
+    },
+    {
+      "id": "sql",
+      "term": "SQL (structured query language)",
+      "definition": "The language used to ask a relational database for data or change it, e.g. select the name and email from customers where the state is Ohio. Also used loosely to mean relational databases themselves."
+    },
+    {
+      "id": "relational-database",
+      "term": "Relational database",
+      "definition": "A database that stores data in tables with fixed columns, where rows point to each other by ID instead of copying information. Examples: PostgreSQL, MySQL, Microsoft SQL Server, Oracle. Like printed forms in a filing cabinet."
+    },
+    {
+      "id": "table-row-column",
+      "term": "Table, row, column",
+      "definition": "In a relational database, a table is one kind of thing (customers, orders), each row is one record (one customer), and each column is one field every row has (email, date joined)."
+    },
+    {
+      "id": "schema",
+      "term": "Schema",
+      "definition": "The rules for what fields exist and what type of data goes in each. Relational databases set it up front and enforce it; document databases let each record differ unless you add validation."
+    },
+    {
+      "id": "primary-key",
+      "term": "Primary key",
+      "definition": "The field that uniquely identifies each row, usually an ID number. Other tables point to a row by its primary key, and syncs use it to tell an update from a new record."
+    },
+    {
+      "id": "transaction",
+      "term": "Transaction",
+      "definition": "A group of database changes that happens all or nothing. If any step fails, the whole group is undone, so you never get an order without its items or stock that dropped for an order that doesn't exist."
+    },
+    {
+      "id": "nosql",
+      "term": "NoSQL",
+      "definition": "Short for 'not only SQL': a family of databases that don't use fixed tables, trading strictness for flexibility or speed at scale. Includes document databases and key-value stores."
+    },
+    {
+      "id": "document-database",
+      "term": "Document database",
+      "definition": "A NoSQL database where each record is a self-contained document shaped like a JSON object, and records in the same collection can have different fields. MongoDB is the best-known example. Like manila folders."
+    },
+    {
+      "id": "key-value-store",
+      "term": "Key-value store",
+      "definition": "A NoSQL database that saves each value under one key and hands it back by that key, very fast. Used for shopping carts, sessions and caches. Examples: Amazon DynamoDB, Redis. Like a coat check."
+    },
+    {
+      "id": "scale-horizontally",
+      "term": "Scale horizontally",
+      "definition": "Handling more load by adding more machines and spreading the data across them, instead of buying one bigger machine (scaling vertically). Key-value and many NoSQL databases are built for this."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Callback",
+      "heading": "Where the answer comes from",
+      "body": "Morning, and welcome to Mind the Gap. This is episode thirteen, it's Monday, and this week we start on data.\n\nQuick look back first, because it sets up everything today. A week ago we covered REST, the most common way A-P-Is are organized. The picture was a contacts app. Everything is a thing with an address, like customers, slash, the customer's I-D. And there are four moves you can make on it: get to read it, post to create it, patch or put to change it, and delete to remove it. Read, create, update, delete. Those four moves have a nickname, CRUD, and you're going to hear them again in about five minutes.\n\nOn Saturday, Maya's booking app did a POST to HubSpot's contacts, and HubSpot answered with a two-oh-one, created. But here's what we never talked about. After HubSpot said created, where did that contact actually go? It didn't float in the air. When some other app does a GET for that contact tomorrow, HubSpot has to find it and send it back as JSON. Something is holding it.\n\nThat something is a database. And today's one idea is that there are two big families of databases, S-Q-L and No-S-Q-L, and they store things in very different shapes. Just that one idea, with a lot of examples."
+    },
+    {
+      "segment": "The idea",
+      "heading": "Printed forms and manila folders",
+      "body": "A database is just a program whose whole job is to store information safely and find it again fast. Every app you use has at least one behind it. The A-P-I is the front counter. The database is the back room.\n\nHere's the picture for today. Imagine two offices that both keep records on their customers.\n\nThe first office uses printed forms. Every customer gets the exact same form, with the exact same boxes: first name, last name, email, phone, date joined. The forms live in a filing cabinet, one drawer per kind of thing. One drawer for customers, one drawer for orders, one drawer for products. If you want to add a new box, say birthday, you have to reprint the form for everybody and decide what goes in that box for the customers you already have. That's strict and a little slow to change. But it's also very tidy. Every form is complete, nothing is in the wrong format, and you can answer questions across drawers, like which customers ordered a blue phone case in March.\n\nThat's a S-Q-L database, also called a relational database. Each drawer is called a table. Each form is a row. Each box is a column. The rule about which boxes exist and what type of thing goes in each one is called the schema, and in a S-Q-L database you set the schema up front. S-Q-L itself stands for structured query language. It's the language you use to ask the database for things, and it reads almost like English: select the name and email from customers where the state is Ohio. Popular examples are PostgreSQL, MySQL, Microsoft S-Q-L Server, and Oracle.\n\nThe second office uses manila folders. Each customer gets a folder, and you put in whatever pages that customer needs. One folder has a name and an email. Another has a name, three shipping addresses, and a sticky note about gift wrapping. Nobody reprints anything when you want to track something new. You just start putting the new page in new folders. That's fast and flexible. The trade-off is that the office trusts you to keep things consistent, and questions that cut across lots of folders can be harder.\n\nThat's the No-S-Q-L family. The name literally means not only S-Q-L, and it's really a grab bag of several shapes. The two you'll hear about most are document databases, where each record is a folder that looks a lot like a JSON object, and key-value stores, which are like a coat check: you hand over a ticket number and get back exactly one thing, very fast. MongoDB is the best-known document database. Amazon DynamoDB and Redis are common key-value stores.\n\nAnd here's the callback to REST. Those four moves, create, read, update, delete, don't stop at the A-P-I. A POST to customers usually becomes an insert into the database. A GET becomes a select, or a find. A PATCH becomes an update. A DELETE becomes, well, a delete. The A-P-I is the polite front counter, and the database is where the CRUD actually happens."
+    },
+    {
+      "segment": "Example one",
+      "heading": "Checkout at a phone-case store",
+      "body": "First example. Picture the small phone-case company from Friday's episode. A customer named Jordan buys two cases and clicks pay.\n\nHere's what happens, step by step. Jordan's browser sends a POST to the store's orders endpoint, with a JSON body listing the two cases and Jordan's customer I-D. The store's server, the back end, receives it. Now the server talks to its database, and in this store it's a S-Q-L database, PostgreSQL.\n\nThe server does several things together. It adds a new row to the orders table: order number, Jordan's customer number, the date, the total. It adds two rows to the order items table, one for each case. And it lowers the stock count by one for each case in the products table, so nobody else buys the last blue one.\n\nHere's why S-Q-L shines here. Those steps are wrapped in what's called a transaction. A transaction is a promise from the database: either every step in this group happens, or none of them do. If the server crashes after creating the order but before lowering the stock, the database undoes the whole thing. You never end up with an order that has no items, or stock that went down for an order that doesn't exist. When money and inventory are involved, that all-or-nothing guarantee is the whole point.\n\nNotice something else. Jordan's name and email are not copied into the order. The order just says customer number forty-two, and the customers table holds Jordan's details in exactly one place. If Jordan changes their email next month, you change one row, and every old order still points to the right person. That's the relational part of a relational database: tables point to each other by I-D numbers, instead of copying information everywhere. The I-D that uniquely names each row is called the primary key.\n\nFinally, the server sends back a two-oh-one, created, with the new order number. Same REST answer you already know. The database is just the part you never saw."
+    },
+    {
+      "segment": "Example two",
+      "heading": "A catalog where nothing matches",
+      "body": "Second example, same store, different problem.\n\nThe company grows. Now it sells phone cases, t-shirts, and laptop stickers. A phone case has a phone model and a material. A t-shirt has a size and a color and a fabric. A sticker has dimensions and a finish, matte or glossy. Next month they want to sell mugs, which have a capacity.\n\nIn the printed-forms world, this gets awkward. Either you make one giant form with boxes for every possible attribute, so a sticker has an empty box for shirt size and an empty box for phone model. Or you make a separate drawer for each product type and stitch them back together every time someone browses the store. Every new product type means changing the schema.\n\nSo the team keeps the catalog in a document database, MongoDB. Each product is one document, one folder. And a document looks almost exactly like the JSON you already know. The phone case document has a name, a price, a phone model, and a material. The t-shirt document has a name, a price, and a list of sizes, small through extra large, each with its own stock count, all nested inside the same document. The sticker document has its own fields. They sit side by side in one collection, which is the document world's word for a drawer, and nobody had to reprint anything.\n\nNow watch what happens when someone browses. Their phone sends a GET to products, slash, the product's I-D. The server asks MongoDB for the one document with that I-D. MongoDB hands it back already shaped like JSON, and the server passes it straight through to the app. There's very little translating. That's a big reason developers like document databases for things like catalogs, user profiles, and content: the data is stored in roughly the same shape the app wants to use it.\n\nThe trade-off is that flexibility cuts both ways. If one developer saves the color as color with a lowercase c, and another saves it as Colour with a capital C and a u, the database won't stop them, unless the team sets up validation rules. In the printed-forms world, the form itself would have refused. So with document databases, the discipline moves from the database into the team's code and habits.\n\nAnd notice the store didn't throw away its S-Q-L database. Orders and payments stayed in PostgreSQL, where transactions protect the money. Only the catalog moved. That's very normal. Most real companies use more than one database, each for what it's good at."
+    },
+    {
+      "segment": "Example three",
+      "heading": "The cart that has to answer instantly",
+      "body": "Third example, and this one is about speed and scale.\n\nPicture a huge online retailer during a holiday sale. Millions of people are adding things to their shopping carts at the same moment. Every time someone taps add to cart, the app needs to save the cart, and every time they open the cart, it needs to load it instantly.\n\nThink about the question being asked. It's always the same shape: give me the cart for shopper number such and such. Nobody is asking which carts contain blue phone cases in Ohio. It's always one key, one answer.\n\nThat's the perfect job for a key-value store, the coat check. The key is the shopper's I-D. The value is their cart. Amazon DynamoDB is built for exactly this. Here's what it looks like to set one up. In the A-W-S console, you open DynamoDB, click create table, give it a name like carts, and choose the partition key, which is the field it uses to find things, in this case shopper I-D. You don't define any other columns. Each item can hold whatever else it needs.\n\nNow the flow. The shopper taps add to cart. The app sends a PUT to the cart endpoint. The server tells DynamoDB, store this value under this shopper's key. Later the shopper opens their cart, the app sends a GET, and the server asks DynamoDB for the item with that key. Because the database only ever has to look up one key, it can spread the data across many machines and stay fast no matter how many shoppers show up. That's what people mean when they say a No-S-Q-L database scales horizontally: you add more machines rather than buying one bigger machine.\n\nAnother very common key-value job is session storage and caching with Redis. When you log into a site, the server often keeps your login session in Redis under a session I-D, because it gets checked on every single click and has to be nearly instant.\n\nWhat you give up is the cross-drawer questions. Asking DynamoDB for every cart that contains a certain product is slow and expensive, because that's not how it's organized. If the business wants that kind of report, the data usually gets copied somewhere built for analysis. Which is a topic for later in the series."
+    },
+    {
+      "segment": "Example four",
+      "heading": "The list you already use",
+      "body": "Fourth example, from your internship, because you've been working with a table this whole time.\n\nA SharePoint list is basically a friendly table. When you create a list, you add columns and choose a type for each one: single line of text, number, date, choice, person. That's a schema. Each item in the list is a row. And SharePoint gives every item an I-D number automatically, which is its primary key.\n\nSo when a Power Automate flow takes a Microsoft Forms response and does create item in a SharePoint list, it's doing an insert. When you use get items with a filter query, like status equals pending, that's the same idea as a S-Q-L select with a where clause. When you use update item and pass the I-D, that's an update. Same four CRUD moves, through a connector instead of your own code. And under the hood, the connector is making REST calls to SharePoint for you.\n\nYou've also felt the schema rule. If a column is set to number and the flow tries to put the word none into it, the step fails. That's the printed form refusing the wrong thing in the box. Annoying when it happens, but it's also why the list stays clean enough to report on.\n\nIf your company outgrows SharePoint lists for something, the next step in the Microsoft world is often Dataverse or Azure S-Q-L Database, which are the same idea, tables with strict columns, with more power and better limits."
+    },
+    {
+      "segment": "Why it matters",
+      "heading": "Questions you'll be asked",
+      "body": "So where does this show up for you as a Solutions Engineer?\n\nFirst, discovery calls. Early on you'll ask where the customer's data lives today. When they say we're on Postgres, or we're a MongoDB shop, or our data's in DynamoDB, you now know what shape it's in. If your product needs to pull that data in, a S-Q-L source usually means connecting with a database username and password and reading from tables. A document source means dealing with records that may not all have the same fields, which matters when you map them into your product.\n\nSecond, demos and proof-of-concept work. A lot of products, analytics tools especially, have a step where the customer connects a database. You'll be the person on the screen share filling in the host, the port, the database name, and the credentials, and then picking which tables to sync. Knowing what a table and a primary key are makes that step calm instead of confusing.\n\nThird, troubleshooting. Here's a classic. A customer says records are showing up twice in your product. Often the cause is that the sync has no reliable unique I-D to match on, so it can't tell an update from a new record. The first question you ask is: what's the primary key on that table? That one question has solved a lot of tickets.\n\nFourth, interviews. Explain the difference between S-Q-L and No-S-Q-L is a very common question, and the strong answer isn't that one is better. It's what you just heard: S-Q-L for structured data with relationships and transactions, like orders and payments. Document databases when records vary and you want flexibility. Key-value when you always look things up by one key and need speed at scale. And most companies use more than one.\n\nOne honest note: the line has blurred. PostgreSQL can store JSON documents inside a column, and MongoDB supports transactions. So in a real conversation, the question is less which family is it and more what shape is the data, and how will it be asked for."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the pocket version.\n\nA database is the back room behind the A-P-I's front counter, where the creates, reads, updates and deletes actually land. S-Q-L databases are printed forms in a filing cabinet: tables with fixed columns, rows that point to each other by I-D, and transactions that make sure a group of changes happens all or nothing. No-S-Q-L databases trade that strictness for flexibility or speed: document databases are manila folders shaped like JSON, and key-value stores are a coat check that hands back one thing by its ticket number, very fast. Real companies mix them: orders in S-Q-L, the catalog in documents, carts in a key-value store.\n\nTomorrow we stay in the S-Q-L world and look at joins: how you answer a question that needs two drawers at once, like which customers ordered which products. It's the move that makes relational databases worth all that tidiness.\n\nHave a good day, and drive safe."
+    }
+  ]
+}
