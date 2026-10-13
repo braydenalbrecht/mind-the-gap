@@ -1,0 +1,122 @@
+{
+  "number": 14,
+  "date": "2026-10-13",
+  "title": "Stapling the Drawers Together",
+  "summary": "SQL joins as the only topic, with foreign keys as the one supporting idea: a clerk stapling each order form to the matching customer card. Inner join keeps only matches; left join keeps everything from the main list and leaves blanks (null). Walked through thank-you notes for last week's orders at the phone-case store, finding customers who never ordered, a three-table best-sellers dashboard, and a customer call where a revenue report was inflated by fan-out (plus orders dropped by an inner join), then where joins show up on discovery calls, demos, troubleshooting and interviews. With a SQL vs NoSQL and primary key callback.",
+  "minutes": 15,
+  "page_url": "https://claude.ai/artifact/GXrcm6iALoiungmR5UQdPm",
+  "topics": [
+    {
+      "id": "sql-joins",
+      "name": "SQL joins",
+      "blurb": "A join lines up rows from two tables wherever a shared ID matches, like stapling each order form to the matching customer card. Inner join keeps only matches; left join keeps every row from the main table and fills blanks (null) where nothing matched. Too many rows means fan-out; too few often means an inner join that should be a left join"
+    },
+    {
+      "id": "sql-vs-nosql",
+      "name": "SQL vs NoSQL (callback)",
+      "blurb": "Relational databases keep each fact in one place (one customer row) and point to it by ID instead of copying it. That tidiness is why you need joins to answer questions that span tables"
+    }
+  ],
+  "sources": [
+    {
+      "title": "PostgreSQL docs: Joins Between Tables (inner and left outer joins)",
+      "url": "https://www.postgresql.org/docs/current/tutorial-join.html"
+    },
+    {
+      "title": "PostgreSQL docs: Foreign Keys",
+      "url": "https://www.postgresql.org/docs/current/tutorial-fk.html"
+    },
+    {
+      "title": "PostgreSQL docs: Table Expressions (joined tables, join conditions)",
+      "url": "https://www.postgresql.org/docs/current/queries-table-expressions.html"
+    },
+    {
+      "title": "Microsoft Support: Create list relationships by using lookup columns (SharePoint)",
+      "url": "https://support.microsoft.com/en-US/SharePoint/lists/data-and-lists/create-list-relationships-by-using-lookup-columns"
+    }
+  ],
+  "glossary": [
+    {
+      "id": "join",
+      "term": "Join",
+      "definition": "A SQL operation that lines up rows from two tables wherever a shared value (usually an ID) matches, producing one combined row per matching pair. Like stapling each order form to the matching customer card."
+    },
+    {
+      "id": "foreign-key",
+      "term": "Foreign key",
+      "definition": "A column in one table that holds another table's primary key, to point at a row over there. The customer ID written on an order is a foreign key pointing at the customers table."
+    },
+    {
+      "id": "join-condition",
+      "term": "Join condition",
+      "definition": "The matching rule for a join, e.g. the order's customer ID equals the customer's ID. It tells the database which rows belong together."
+    },
+    {
+      "id": "inner-join",
+      "term": "Inner join",
+      "definition": "The default join: keeps only rows that have a match on both sides. Good for 'last week's orders with customer names'. Rows with no match are dropped."
+    },
+    {
+      "id": "left-join",
+      "term": "Left join",
+      "definition": "Keeps every row from the first (left) table, staples on matches from the second, and fills null where there's no match. Good for 'customers who never ordered': left join, then keep rows where the order is null."
+    },
+    {
+      "id": "fan-out",
+      "term": "Fan-out",
+      "definition": "When a join multiplies rows because one row matches several rows on the other side (one order, two shipments). Adding up totals afterward double-counts. Usual cause of reports with numbers that are too big."
+    },
+    {
+      "id": "lookup-column",
+      "term": "Lookup column",
+      "definition": "A SharePoint list column that points at an item in another list, like a request pointing at an employee. Pulling the employee's details through it works like a join."
+    },
+    {
+      "id": "data-warehouse",
+      "term": "Data warehouse",
+      "definition": "A separate database built for big reporting and analysis questions. Pipelines copy data into it from the apps' own databases (often nightly), and dashboards query it."
+    }
+  ],
+  "sections": [
+    {
+      "segment": "Callback",
+      "heading": "Two drawers, one question",
+      "body": "Morning, and welcome to Mind the Gap. This is episode fourteen, it's Tuesday, and we're staying in the database world today.\n\nQuick look back at yesterday. We split databases into two families. No-S-Q-L is the manila folders and the coat check: flexible, fast, each record mostly standing on its own. S-Q-L, the relational kind, is printed forms in a filing cabinet. Each drawer is a table, like customers or orders. Each form in the drawer is a row. Each blank on the form is a column. And every row gets a unique I-D number called the primary key.\n\nThen there was one detail from the checkout example that I want you to hold onto. When Jordan bought two phone cases, the order did not copy Jordan's name and email onto it. The order just said customer number forty-two. Jordan's details live in exactly one place, the customers drawer.\n\nThat's tidy. But it creates an obvious problem. Your boss walks over and asks, who bought what last week? The answer is split across drawers. The orders drawer knows customer number forty-two bought something, but not who that is. The customers drawer knows who forty-two is, but not what they bought.\n\nToday's one idea is the move that puts those drawers back together. It's called a join. That's it for today: one idea, a lot of examples."
+    },
+    {
+      "segment": "The idea",
+      "heading": "Stapling the forms together",
+      "body": "Here's the plain English version. A join takes rows from two tables and lines them up side by side wherever a shared value matches. Usually that shared value is an I-D number.\n\nPicture a clerk with two stacks of paper. On the left, the order forms. On the right, the customer cards. For each order, the clerk reads the customer number written on it, say forty-two, walks to the customer cards, finds card forty-two, and staples it next to the order. When the clerk is done, you have a new stack where every page shows the order and the customer together: order number, date, total, and right beside it, Jordan, Jordan's email, Jordan's city. That stapled stack is the result of a join.\n\nThere's one supporting idea you need to make this click, and it's small. The customer number written on the order has its own name. On the customers table, customer I-D is the primary key, the thing that uniquely names each customer. When that same number shows up on a different table, like orders, to point back at a customer, it's called a foreign key. Foreign just means it belongs to another table. So the order's foreign key says, this order belongs to customer forty-two over there. A join follows that pointer. Primary key on one side, foreign key on the other, and the join matches them up.\n\nWhen you write this in S-Q-L, you say it almost in English. Select the order number, the date, and the customer's name, from orders, joined with customers, where the order's customer I-D equals the customer's I-D. That last part, the matching rule, is called the join condition. It's the instruction to the clerk: match on customer number.\n\nNow, there are a few kinds of join, and you really only need two to start.\n\nThe first is the inner join, which is the default. An inner join only keeps pairs that match on both sides. If an order points to a customer that exists, it's stapled and kept. If a customer has never ordered anything, there's nothing to staple them to, so they don't appear. And if an order somehow points at a customer number that doesn't exist, that order gets dropped too. Inner join means: only the matches.\n\nThe second is the left join. A left join keeps every row from the first table, the one on the left, no matter what. If there's a match, it staples it on. If there's no match, it staples on a blank page. In database terms, those blanks are null, which you heard about back in the JSON episode: the field exists, but nothing is in it. Left join means: keep everything from my main list, and fill in what you can.\n\nThere are also right joins, which are just the mirror image, and full joins, which keep everything from both sides. You'll see them, but inner and left cover the vast majority of real work. So let's go see them work."
+    },
+    {
+      "segment": "Example one",
+      "heading": "Who bought what",
+      "body": "First example. Back to the phone-case store. It's Monday morning and the owner wants a list of last week's orders with customer names, so she can send thank-you notes.\n\nThe store's data lives in PostgreSQL, that S-Q-L database from yesterday. There's an orders table with order number, customer I-D, date and total. There's a customers table with customer I-D, name, email and city.\n\nSomeone on the team, or a reporting tool, sends the database a query that says: give me the order number, the date, the total, and the customer's name and email, from orders inner joined with customers on customer I-D, for orders placed in the last seven days.\n\nHere's what the database actually does. It looks at last week's orders, say three of them. Order one-oh-one, customer forty-two. Order one-oh-two, customer seventeen. Order one-oh-three, customer forty-two again. For each one, it finds the matching customer row. Forty-two is Jordan. Seventeen is Priya. Then it hands back three rows: one-oh-one with Jordan, one-oh-two with Priya, one-oh-three with Jordan again.\n\nNotice two things. Jordan shows up twice, because Jordan placed two orders. A join gives you one row per matching pair, so if one customer has many orders, the customer's details repeat on each one. That's expected, and it'll matter in a later example.\n\nSecond, the hundreds of customers who didn't order last week aren't in the result at all. That's the inner join doing exactly what it promises: only matches. For thank-you notes, that's perfect. You only want people who actually bought something.\n\nAnd if this store has a REST A-P-I, this is often what's behind a single GET. When the store's admin app calls get orders, slash, one-oh-one, the server might run this very join so the JSON it sends back includes the customer's name, not just the number forty-two. The person calling the A-P-I never sees the two drawers. They just see one tidy answer."
+    },
+    {
+      "segment": "Example two",
+      "heading": "The customers who never ordered",
+      "body": "Second example, same store, different question. The marketing person says: I want to email everyone who created an account but never bought anything, and offer them ten percent off.\n\nThink about the inner join from a minute ago. It only keeps matches. But these people, by definition, have no matching order. An inner join would hide every single one of them. This is exactly the job for a left join.\n\nSo the query becomes: from customers, left joined with orders, on customer I-D. Customers is on the left now, because customers is the list we care about keeping whole.\n\nStep by step. The database goes through every customer. Jordan has orders, so Jordan gets a row for each order. Priya has an order, so Priya gets a row. Then it reaches Sam. Sam signed up three weeks ago and never bought anything. There's no order to staple to Sam. With a left join, Sam is kept anyway, and the order columns next to Sam's name come back as null: no order number, no date, no total.\n\nThen you add one more instruction: only keep the rows where the order number is null. Now the list is only Sam and everyone like Sam. Those are your never-bought customers, and that list goes to the email tool.\n\nThis pattern, left join and then keep the blanks, is one of the most common questions in all of business data. Which customers haven't ordered. Which products haven't sold. Which employees haven't finished their training. Which support tickets have no reply. Every time the question is about something missing, you're likely looking at a left join.\n\nYou've actually seen a cousin of this in the internship world. In SharePoint, a list can have a lookup column that points at another list, like a requests list where each request points at an employee in the employees list. When a Power Automate flow or a view pulls the employee's department next to each request, it's doing the same thing a join does: following a pointer from one table to another and lining up the details. Same idea, friendlier screen."
+    },
+    {
+      "segment": "Example three",
+      "heading": "A best-sellers dashboard",
+      "body": "Third example, and this one chains more than two tables. The owner wants a dashboard that shows which products sold best this month, with the product name and category.\n\nHere's the catch. From yesterday, remember that each order can have several items, so there's a separate order items table: one row per case in each order, with the order number, the product I-D, and the quantity. Product names live in a products table. And the order date lives on the orders table.\n\nSo the question touches three drawers. Orders, to filter to this month. Order items, to see what was in each order. Products, to turn product I-D seven into Clear MagSafe Case for iPhone.\n\nA dashboard tool, say Power B-I or Looker or Tableau, connects to the database and sends one query with two joins in it. Orders joined to order items on order number. Then order items joined to products on product I-D. Then add up the quantities for each product and sort from most to least.\n\nStep by step: the database starts with this month's orders. For each order, it staples on its items, so an order with two cases becomes two rows. For each item row, it staples on the product's name and category. Now each row reads like a sentence: order one-oh-one, on October fifth, included one Clear MagSafe Case, in the clear cases category. Then the database adds them up product by product and hands the dashboard a short list: product name, total sold.\n\nThe dashboard draws a bar chart, and the owner sees it every morning without ever knowing three drawers were involved.\n\nThis is also where data engineering, which is your internship area, comes in. At bigger companies, these joins often run on a data warehouse, a separate database built for big reporting questions, and a pipeline copies the data into it every night. The joins are the same moves. Just much bigger stacks of paper."
+    },
+    {
+      "segment": "Example four",
+      "heading": "When the numbers come out wrong",
+      "body": "Fourth example, and this is the one you're most likely to live through as a Solutions Engineer. It's a support-style call.\n\nA customer has connected your company's analytics product to their database. They call and say: our revenue report is wrong. Last month we made about one hundred thousand dollars, and your report says one hundred and forty thousand.\n\nYou share screens and look at the query behind the report. It joins orders to shipments, so it can show the shipping carrier next to each order. Then it adds up the order totals.\n\nHere's the problem, step by step. Most orders ship in one box. But some big orders ship in two boxes, so they have two rows in the shipments table. Remember what a join does: one row per matching pair. So an order with two shipments comes out of the join as two rows, and both rows carry the full order total. When the report adds up the totals, that order's revenue is counted twice. An order with three boxes gets counted three times. That's where the extra forty thousand dollars came from.\n\nThis is called fan-out. A join quietly multiplied rows because one side had several matches for each row on the other side. The data wasn't wrong. The question was.\n\nThe fix is to add up the order totals first, before stapling on shipments, or to only join shipments when you actually need carrier details. You walk the customer through that, the numbers match their books, and you've just saved the account.\n\nHere's the mirror-image problem, which shows up on the same kinds of calls. A different customer says the report is missing orders. You look, and the query uses an inner join between orders and customers. But this store allows guest checkout, and guest orders have no customer I-D. With an inner join, an order with no matching customer gets dropped. Switch it to a left join, with orders on the left, and every order comes back, with blanks for the customer name on the guest ones.\n\nTwo calls, one rule of thumb. Too many rows, or numbers too big: check whether a join is multiplying things. Too few rows: check whether an inner join is dropping things that a left join would keep."
+    },
+    {
+      "segment": "Why it matters",
+      "heading": "Where joins will find you",
+      "body": "So where does this actually show up for you?\n\nOn discovery calls. When a customer describes their data, you'll hear things like, our orders are in one system and our customers are in another. Your next question is, what's the shared I-D between them? Email address? A customer number? If there's no clean shared key, every integration and every report after that gets harder, and you want to know that before you promise a demo.\n\nIn demos. Plenty of the products Solutions Engineers sell, analytics tools, customer data platforms, data integration tools, ask you to connect two tables and pick the column they match on. That screen is a join with buttons. When you can explain what's happening underneath, in one plain sentence, the technical people on the call trust you more.\n\nOn troubleshooting calls, like the revenue one. Too many rows, too few rows, totals that don't match. You now know the two most common causes.\n\nIn interviews. The difference between an inner join and a left join is one of the most common technical questions for data roles and for Solutions Engineer roles that sell data products. A good answer has the definition plus an example: an inner join keeps only matches, so it's right for orders with customer names; a left join keeps everything from the main table, so it's right for finding customers who never ordered.\n\nAnd in your internship. Any time a flow looks up a value in one SharePoint list using an I-D from another, you're doing a join by hand. Now you have the word for it."
+    },
+    {
+      "segment": "Wrap",
+      "heading": "Pocket version",
+      "body": "Here's the pocket version.\n\nRelational databases keep each fact in one place and point to it by I-D. The primary key names a row, and a foreign key on another table points back at it. A join follows that pointer and staples matching rows together. An inner join keeps only the matches, and a left join keeps everything from your main list and leaves blanks where nothing matched. If a joined report has too many rows, look for fan-out. Too few, look for an inner join that should be a left join.\n\nTomorrow we switch over to A-I and take on embeddings: how a computer turns words into numbers so it can tell that a car and an automobile mean nearly the same thing. It's the piece that makes smart search work, and it sets up a lot of what comes later.\n\nHave a good day, and drive safe."
+    }
+  ]
+}
